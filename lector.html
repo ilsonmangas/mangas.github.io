@@ -156,6 +156,10 @@
             backdrop-filter: blur(10px);
         }
 
+        .mode-selector.hidden {
+            display: none;
+        }
+
         .mode-btn {
             background: none;
             border: none;
@@ -178,6 +182,7 @@
             transform: translate(-50%, -50%);
             color: #00d4ff;
             text-align: center;
+            z-index: 2000;
         }
 
         .spinner {
@@ -234,13 +239,14 @@
         let currentChapter = null;
         let totalPages = 0;
         let currentPage = 1;
-        let currentMode = 'cascada'; // 'cascada' o 'paginas'
+        let currentMode = 'cascada';
         let totalChapters = [];
 
         // Obtener capítulo de la URL (?chapter=345)
         function getChapterFromURL() {
             const params = new URLSearchParams(window.location.search);
-            return parseInt(params.get('chapter')) || 345;
+            const chapter = parseInt(params.get('chapter'));
+            return !isNaN(chapter) ? chapter : 345;
         }
 
         // Cargar lista de capítulos desde tu API
@@ -248,7 +254,10 @@
             try {
                 const response = await fetch(`${BASE_URL}/api/chapters.json`);
                 const data = await response.json();
+                // Tu JSON tiene "chapters" directamente
                 totalChapters = data.chapters || [];
+                // Ordenar por número descendente (nuevos primero)
+                totalChapters.sort((a, b) => b.number - a.number);
                 return totalChapters;
             } catch (error) {
                 console.error('Error cargando capítulos:', error);
@@ -267,7 +276,7 @@
             `;
 
             try {
-                // Primero obtener información del capítulo desde la API
+                // Obtener información del capítulo desde la API
                 const chapters = await loadChaptersList();
                 const chapterInfo = chapters.find(c => c.number === chapterNumber);
                 
@@ -275,16 +284,22 @@
                     currentChapter = chapterInfo;
                     totalPages = currentChapter.pages;
                 } else {
-                    // Si no está en API, asumir 50 páginas
+                    // Fallback: crear capítulo temporal
                     totalPages = 50;
-                    currentChapter = { id: chapterNumber, number: chapterNumber, title: `Capítulo ${chapterNumber}`, pages: 50 };
+                    currentChapter = { 
+                        id: chapterNumber, 
+                        number: chapterNumber, 
+                        title: `Capítulo ${chapterNumber}`, 
+                        pages: 50,
+                        volume: 1
+                    };
                 }
 
                 // Actualizar UI
                 document.getElementById('chapterNumber').innerText = `Capítulo ${currentChapter.number}`;
                 document.getElementById('chapterTitle').innerText = currentChapter.title || '';
 
-                // Cargar URLs de imágenes
+                // Generar URLs de imágenes (formato caps/{id}/{page}.jpg)
                 const imageUrls = [];
                 for (let i = 1; i <= totalPages; i++) {
                     imageUrls.push(`${BASE_URL}/caps/${currentChapter.id}/${i}.jpg`);
@@ -293,15 +308,15 @@
                 // Renderizar según el modo actual
                 renderReader(imageUrls);
                 
-                // Actualizar indicador de página
-                updatePageIndicator();
+                // Cargar última página guardada y posicionar
+                loadLastPageAndPosition();
                 
             } catch (error) {
                 console.error('Error cargando capítulo:', error);
                 loadingDiv.innerHTML = `
                     <div class="loading">
                         <div>❌ Error al cargar el capítulo</div>
-                        <button onclick="location.reload()" style="margin-top:16px;padding:8px 16px;">Reintentar</button>
+                        <button onclick="location.reload()" style="margin-top:16px;padding:8px 16px;background:#00d4ff;border:none;border-radius:8px;color:black;">Reintentar</button>
                     </div>
                 `;
             }
@@ -324,13 +339,13 @@
                     </div>
                 `;
                 
-                // Evento de scroll para detectar página actual y ocultar/mostrar UI
                 const cascadaContainer = document.getElementById('cascadaContainer');
                 if (cascadaContainer) {
-                    cascadaContainer.addEventListener('scroll', () => {
+                    const onScroll = () => {
                         updateCurrentPageFromScroll();
-                        toggleUI();
-                    });
+                        toggleUIOnScroll();
+                    };
+                    cascadaContainer.addEventListener('scroll', onScroll);
                 }
                 
             } else {
@@ -349,24 +364,55 @@
                 
                 const pagesContainer = document.getElementById('pagesContainer');
                 if (pagesContainer) {
-                    // Detectar cambio de página por scroll
-                    pagesContainer.addEventListener('scroll', () => {
+                    const onScroll = () => {
                         const scrollLeft = pagesContainer.scrollLeft;
                         const pageWidth = pagesContainer.clientWidth;
                         const newPage = Math.round(scrollLeft / pageWidth) + 1;
-                        if (newPage !== currentPage) {
-                            currentPage = Math.min(newPage, totalPages);
+                        if (newPage !== currentPage && newPage >= 1 && newPage <= totalPages) {
+                            currentPage = newPage;
                             updatePageIndicator();
                             saveLastPage();
                         }
-                        toggleUI();
-                    });
-                    
-                    // Scroll a la página guardada
-                    setTimeout(() => {
-                        pagesContainer.scrollLeft = (currentPage - 1) * pagesContainer.clientWidth;
-                    }, 100);
+                        toggleUIOnScroll();
+                    };
+                    pagesContainer.addEventListener('scroll', onScroll);
                 }
+            }
+            
+            // Ocultar loading
+            const loadingDiv = document.querySelector('.loading');
+            if (loadingDiv) loadingDiv.remove();
+        }
+
+        // Posicionar en la última página guardada después de cargar
+        function loadLastPageAndPosition() {
+            const savedPage = localStorage.getItem(`lastPage_${currentChapter.id}`);
+            if (savedPage) {
+                currentPage = parseInt(savedPage);
+                currentPage = Math.min(currentPage, totalPages);
+                updatePageIndicator();
+                
+                // Posicionar después de que las imágenes se rendericen
+                setTimeout(() => {
+                    if (currentMode === 'cascada') {
+                        const container = document.getElementById('cascadaContainer');
+                        if (container) {
+                            let accumulatedHeight = 0;
+                            const images = container.querySelectorAll('img');
+                            for (let i = 0; i < currentPage - 1 && i < images.length; i++) {
+                                accumulatedHeight += images[i].clientHeight;
+                            }
+                            container.scrollTop = accumulatedHeight;
+                        }
+                    } else {
+                        const container = document.getElementById('pagesContainer');
+                        if (container) {
+                            container.scrollLeft = (currentPage - 1) * container.clientWidth;
+                        }
+                    }
+                }, 300);
+            } else {
+                updatePageIndicator();
             }
         }
 
@@ -402,21 +448,43 @@
             }
         }
 
-        // Ocultar/mostrar UI (tap para mostrar/ocultar)
-        let uiHidden = false;
-        function toggleUI() {
-            // Esta función se llama con cada scroll/tap para ocultar UI
-            // Implementación simple: no auto-ocultamos por ahora
+        // Auto-ocultar UI al hacer scroll
+        let scrollTimeout;
+        function toggleUIOnScroll() {
+            const header = document.getElementById('readerHeader');
+            const footer = document.getElementById('readerFooter');
+            const selector = document.getElementById('modeSelector');
+            
+            header.classList.add('hidden');
+            footer.classList.add('hidden');
+            if (selector) selector.classList.add('hidden');
+            
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                header.classList.remove('hidden');
+                footer.classList.remove('hidden');
+                if (selector) selector.classList.remove('hidden');
+            }, 2000);
         }
-        
-        // Tap en pantalla para mostrar/ocultar UI
+
+        // Tap en pantalla para mostrar/ocultar UI manualmente
+        let uiManualHidden = false;
         document.body.addEventListener('click', (e) => {
-            // No ocultar si se clickeó en botones
             if (e.target.closest('button')) return;
-            uiHidden = !uiHidden;
-            document.getElementById('readerHeader').classList.toggle('hidden', uiHidden);
-            document.getElementById('readerFooter').classList.toggle('hidden', uiHidden);
-            document.getElementById('modeSelector').classList.toggle('hidden', uiHidden);
+            uiManualHidden = !uiManualHidden;
+            const header = document.getElementById('readerHeader');
+            const footer = document.getElementById('readerFooter');
+            const selector = document.getElementById('modeSelector');
+            
+            if (uiManualHidden) {
+                header.classList.add('hidden');
+                footer.classList.add('hidden');
+                if (selector) selector.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+                footer.classList.remove('hidden');
+                if (selector) selector.classList.remove('hidden');
+            }
         });
 
         function updatePageIndicator() {
@@ -426,23 +494,10 @@
             }
         }
 
-        // Guardar última página leída
         function saveLastPage() {
             if (currentChapter) {
                 localStorage.setItem(`lastPage_${currentChapter.id}`, currentPage);
                 localStorage.setItem('lastChapterId', currentChapter.id);
-            }
-        }
-
-        // Cargar última página guardada
-        function loadLastPage() {
-            if (currentChapter) {
-                const saved = localStorage.getItem(`lastPage_${currentChapter.id}`);
-                if (saved) {
-                    currentPage = parseInt(saved);
-                    currentPage = Math.min(currentPage, totalPages);
-                    updatePageIndicator();
-                }
             }
         }
 
@@ -479,8 +534,7 @@
             } else {
                 const container = document.getElementById('pagesContainer');
                 if (container) {
-                    const pageWidth = container.clientWidth;
-                    container.scrollTo({ left: (page - 1) * pageWidth, behavior: 'smooth' });
+                    container.scrollTo({ left: (page - 1) * container.clientWidth, behavior: 'smooth' });
                 }
             }
             currentPage = page;
@@ -513,11 +567,9 @@
             currentMode = mode;
             localStorage.setItem('readerMode', mode);
             
-            // Actualizar botones
             document.getElementById('cascadaBtn').classList.toggle('active', mode === 'cascada');
             document.getElementById('paginasBtn').classList.toggle('active', mode === 'paginas');
             
-            // Recargar el capítulo con el nuevo modo
             if (currentChapter) {
                 loadChapter(currentChapter.number);
             }
@@ -540,9 +592,7 @@
             const chapterNum = getChapterFromURL();
             await loadChaptersList();
             await loadChapter(chapterNum);
-            loadLastPage();
             
-            // Configurar event listeners
             document.getElementById('prevPageBtn').onclick = prevPage;
             document.getElementById('nextPageBtn').onclick = nextPage;
             document.getElementById('prevChapterBtn').onclick = prevChapter;
