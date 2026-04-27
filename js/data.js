@@ -4,7 +4,7 @@ const chaptersData = [
     { id: 2, number: 2, title: "El Monstruo", pages: 48, volume: 1 },
     { id: 3, number: 3, title: "El Comienzo", pages: 55, volume: 1 },
     { id: 4, number: 4, title: "La Jaula", pages: 50, volume: 1 },
-    { id: 5, number: 5, title: "La Selección", pages: 52, volume: 1 },
+    { id: 344, number: 344, title: "Rebelde", pages: 20, volume: 38 },
     { id: 345, number: 345, title: "Verdadero final", pages: 22, volume: 39 }
 ];
 
