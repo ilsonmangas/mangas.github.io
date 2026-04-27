@@ -5,7 +5,7 @@ const chaptersData = [
     { id: 3, number: 3, title: "El Comienzo", pages: 55, volume: 1 },
     { id: 4, number: 4, title: "La Jaula", pages: 50, volume: 1 },
     { id: 5, number: 5, title: "La Selección", pages: 52, volume: 1 },
-    { id: 345, number: 345, title: "El Despertar del Depredador", pages: 45, volume: 14 }
+    { id: 345, number: 345, title: "El Despertar del Depredador", pages: 22, volume: 14 }
 ];
 
 // Generar capítulos del 6 al 344 automáticamente
