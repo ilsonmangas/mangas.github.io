@@ -482,25 +482,34 @@
         }
 
         // Navegación de capítulos (botones)
+        function notifyFlutterChapterChange(chapterNumber, chapterTitle) {
+    if (window.flutter_inappwebview) {
+        window.flutter_inappwebview.callHandler('chapterChanged', chapterNumber, chapterTitle);
+    }
+}
         async function nextChapter() {
-            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
-            if (currentIndex > 0) {
-                const nextChap = totalChapters[currentIndex - 1];
-                window.location.href = `lector.html?chapter=${nextChap.number}`;
-            } else {
-                alert('📖 ¡Es el último capítulo!');
-            }
-        }
+    const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+    if (currentIndex > 0) {
+        const nextChap = totalChapters[currentIndex - 1];
+        // Notificar a Flutter
+        notifyFlutterChapterChange(nextChap.number, nextChap.title);
+        window.location.href = `lector.html?chapter=${nextChap.number}`;
+    } else {
+        alert('📖 ¡Es el último capítulo!');
+    }
+}
 
         async function prevChapter() {
-            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
-            if (currentIndex < totalChapters.length - 1) {
-                const prevChap = totalChapters[currentIndex + 1];
-                window.location.href = `lector.html?chapter=${prevChap.number}`;
-            } else {
-                alert('📖 ¡Es el primer capítulo!');
-            }
-        }
+    const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+    if (currentIndex < totalChapters.length - 1) {
+        const prevChap = totalChapters[currentIndex + 1];
+        // Notificar a Flutter
+        notifyFlutterChapterChange(prevChap.number, prevChap.title);
+        window.location.href = `lector.html?chapter=${prevChap.number}`;
+    } else {
+        alert('📖 ¡Es el primer capítulo!');
+    }
+}
 
         function setMode(mode) {
             currentMode = mode;
