@@ -2,8 +2,8 @@
 const chaptersData = [
     { id: 1, number: 1, title: "Sueño", pages: 52, volume: 1 },
     { id: 2, number: 2, title: "El Monstruo", pages: 48, volume: 1 },
-    { id: 3, number: 3, title: "El Comienzo", pages: 55, volume: 1 },
-    { id: 4, number: 4, title: "La Jaula", pages: 50, volume: 1 },
+    { id: 342, number: 342, title: "Arrebatando la corona", pages: 19, volume: 38 },
+    { id: 343, number: 343, title: "Vivien Hugo", pages: 20, volume: 38 },
     { id: 344, number: 344, title: "Rebelde", pages: 20, volume: 38 },
     { id: 345, number: 345, title: "Verdadero final", pages: 22, volume: 39 }
 ];
