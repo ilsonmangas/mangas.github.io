@@ -482,29 +482,34 @@
         }
 
         // Navegación de capítulos (botones)
-        function notifyFlutterChapterChange(chapterNumber, chapterTitle) {
-    if (window.flutter_inappwebview) {
-        window.flutter_inappwebview.callHandler('chapterChanged', chapterNumber, chapterTitle);
+// Enviar mensaje a Flutter cuando cambia de capítulo
+function notifyFlutter(chapterNumber, chapterTitle) {
+    if (window.FlutterNotifier) {
+        window.FlutterNotifier.postMessage(JSON.stringify({
+            chapter: chapterNumber,
+            title: chapterTitle
+        }));
     }
 }
-        async function nextChapter() {
+
+// Modificar nextChapter
+async function nextChapter() {
     const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
     if (currentIndex > 0) {
         const nextChap = totalChapters[currentIndex - 1];
-        // Notificar a Flutter
-        notifyFlutterChapterChange(nextChap.number, nextChap.title);
+        notifyFlutter(nextChap.number, nextChap.title);
         window.location.href = `lector.html?chapter=${nextChap.number}`;
     } else {
         alert('📖 ¡Es el último capítulo!');
     }
 }
 
-        async function prevChapter() {
+// Modificar prevChapter
+async function prevChapter() {
     const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
     if (currentIndex < totalChapters.length - 1) {
         const prevChap = totalChapters[currentIndex + 1];
-        // Notificar a Flutter
-        notifyFlutterChapterChange(prevChap.number, prevChap.title);
+        notifyFlutter(prevChap.number, prevChap.title);
         window.location.href = `lector.html?chapter=${prevChap.number}`;
     } else {
         alert('📖 ¡Es el primer capítulo!');
