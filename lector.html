@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Blue Lock - Lector de Manga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: black;
+            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        /* Barra superior */
+        .reader-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 12px 16px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .reader-header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .chapter-info {
+            font-size: 14px;
+        }
+
+        .chapter-number {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* Barra inferior */
+        .reader-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 8px 16px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .reader-footer.hidden {
+            transform: translateY(100%);
+        }
+
+        .page-indicator {
+            background: rgba(0,0,0,0.7);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-buttons button {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Contenedor de imágenes - MODO CASCADA */
+        .cascada-container {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+
+        .cascada-container img {
+            width: 100%;
+            display: block;
+            background: black;
+        }
+
+        /* Contenedor de imágenes - MODO PÁGINAS */
+        .pages-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        .pages-container .page {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: black;
+        }
+
+        .pages-container img {
+            width: 100%;
+            height: auto;
+            max-height: 100vh;
+            object-fit: contain;
+        }
+
+        /* Selector de modo */
+        .mode-selector {
+            position: fixed;
+            right: 16px;
+            bottom: 70px;
+            background: rgba(0,0,0,0.9);
+            border-radius: 30px;
+            padding: 8px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-btn {
+            background: none;
+            border: none;
+            padding: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .mode-btn.active {
+            background: #00d4ff;
+            color: black;
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00d4ff;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0,212,255,0.3);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Ocultar scrollbar en modo páginas */
+        .pages-container::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="reader-header" id="readerHeader">
+        <div class="chapter-info">
+            <span class="chapter-number" id="chapterNumber">Capítulo --</span>
+            <span id="chapterTitle"></span>
+        </div>
+        <div class="controls">
+            <button id="menuBtn" onclick="window.location.href='index.html'">🏠</button>
+        </div>
+    </div>
+
+    <div class="mode-selector" id="modeSelector">
+        <button class="mode-btn" id="cascadaBtn" title="Modo cascada (vertical)">📜</button>
+        <button class="mode-btn" id="paginasBtn" title="Modo páginas (horizontal)">📖</button>
+    </div>
+
+    <div class="reader-footer" id="readerFooter">
+        <div class="page-indicator" id="pageIndicator">Página -- / --</div>
+        <div class="nav-buttons" id="navButtons">
+            <button id="prevChapterBtn">⏮ Cap anterior</button>
+            <button id="prevPageBtn">◀</button>
+            <button id="nextPageBtn">▶</button>
+            <button id="nextChapterBtn">Cap siguiente ⏭</button>
+        </div>
+    </div>
+
+    <div id="readerContent"></div>
+
+    <script>
+        // ==================== CONFIGURACIÓN ====================
+        const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
+        let currentChapter = null;
+        let totalPages = 0;
+        let currentPage = 1;
+        let currentMode = 'cascada'; // 'cascada' o 'paginas'
+        let totalChapters = [];
+
+        // Obtener capítulo de la URL (?chapter=345)
+        function getChapterFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return parseInt(params.get('chapter')) || 345;
+        }
+
+        // Cargar lista de capítulos desde tu API
+        async function loadChaptersList() {
+            try {
+                const response = await fetch(`${BASE_URL}/api/chapters.json`);
+                const data = await response.json();
+                totalChapters = data.chapters || [];
+                return totalChapters;
+            } catch (error) {
+                console.error('Error cargando capítulos:', error);
+                return [];
+            }
+        }
+
+        // Cargar las imágenes del capítulo actual
+        async function loadChapter(chapterNumber) {
+            const loadingDiv = document.getElementById('readerContent');
+            loadingDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Cargando Capítulo ${chapterNumber}...</div>
+                </div>
+            `;
+
+            try {
+                // Primero obtener información del capítulo desde la API
+                const chapters = await loadChaptersList();
+                const chapterInfo = chapters.find(c => c.number === chapterNumber);
+                
+                if (chapterInfo) {
+                    currentChapter = chapterInfo;
+                    totalPages = currentChapter.pages;
+                } else {
+                    // Si no está en API, asumir 50 páginas
+                    totalPages = 50;
+                    currentChapter = { id: chapterNumber, number: chapterNumber, title: `Capítulo ${chapterNumber}`, pages: 50 };
+                }
+
+                // Actualizar UI
+                document.getElementById('chapterNumber').innerText = `Capítulo ${currentChapter.number}`;
+                document.getElementById('chapterTitle').innerText = currentChapter.title || '';
+
+                // Cargar URLs de imágenes
+                const imageUrls = [];
+                for (let i = 1; i <= totalPages; i++) {
+                    imageUrls.push(`${BASE_URL}/caps/${currentChapter.id}/${i}.jpg`);
+                }
+
+                // Renderizar según el modo actual
+                renderReader(imageUrls);
+                
+                // Actualizar indicador de página
+                updatePageIndicator();
+                
+            } catch (error) {
+                console.error('Error cargando capítulo:', error);
+                loadingDiv.innerHTML = `
+                    <div class="loading">
+                        <div>❌ Error al cargar el capítulo</div>
+                        <button onclick="location.reload()" style="margin-top:16px;padding:8px 16px;">Reintentar</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Renderizar el lector según el modo
+        function renderReader(imageUrls) {
+            const container = document.getElementById('readerContent');
+            
+            if (currentMode === 'cascada') {
+                // MODO CASCADA - Todas las imágenes pegadas verticalmente
+                container.innerHTML = `
+                    <div class="cascada-container" id="cascadaContainer">
+                        ${imageUrls.map((url, idx) => `
+                            <img src="${url}" 
+                                 loading="lazy"
+                                 onerror="this.style.display='none'"
+                                 alt="Página ${idx + 1}">
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Evento de scroll para detectar página actual y ocultar/mostrar UI
+                const cascadaContainer = document.getElementById('cascadaContainer');
+                if (cascadaContainer) {
+                    cascadaContainer.addEventListener('scroll', () => {
+                        updateCurrentPageFromScroll();
+                        toggleUI();
+                    });
+                }
+                
+            } else {
+                // MODO PÁGINAS - Una página a la vez, swipe horizontal
+                container.innerHTML = `
+                    <div class="pages-container" id="pagesContainer">
+                        ${imageUrls.map((url, idx) => `
+                            <div class="page" data-page="${idx + 1}">
+                                <img src="${url}" 
+                                     onerror="this.style.display='none'"
+                                     alt="Página ${idx + 1}">
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                const pagesContainer = document.getElementById('pagesContainer');
+                if (pagesContainer) {
+                    // Detectar cambio de página por scroll
+                    pagesContainer.addEventListener('scroll', () => {
+                        const scrollLeft = pagesContainer.scrollLeft;
+                        const pageWidth = pagesContainer.clientWidth;
+                        const newPage = Math.round(scrollLeft / pageWidth) + 1;
+                        if (newPage !== currentPage) {
+                            currentPage = Math.min(newPage, totalPages);
+                            updatePageIndicator();
+                            saveLastPage();
+                        }
+                        toggleUI();
+                    });
+                    
+                    // Scroll a la página guardada
+                    setTimeout(() => {
+                        pagesContainer.scrollLeft = (currentPage - 1) * pagesContainer.clientWidth;
+                    }, 100);
+                }
+            }
+        }
+
+        // Actualizar página actual basada en scroll (modo cascada)
+        function updateCurrentPageFromScroll() {
+            const container = document.getElementById('cascadaContainer');
+            if (!container) return;
+            
+            const scrollTop = container.scrollTop;
+            const windowHeight = window.innerHeight;
+            let accumulatedHeight = 0;
+            let visiblePage = 1;
+            
+            const images = container.querySelectorAll('img');
+            for (let i = 0; i < images.length; i++) {
+                const imgHeight = images[i].clientHeight;
+                const imageTop = accumulatedHeight;
+                const imageBottom = imageTop + imgHeight;
+                
+                const viewportCenter = scrollTop + windowHeight / 2;
+                
+                if (viewportCenter >= imageTop && viewportCenter <= imageBottom) {
+                    visiblePage = i + 1;
+                    break;
+                }
+                accumulatedHeight += imgHeight;
+            }
+            
+            if (visiblePage !== currentPage) {
+                currentPage = visiblePage;
+                updatePageIndicator();
+                saveLastPage();
+            }
+        }
+
+        // Ocultar/mostrar UI (tap para mostrar/ocultar)
+        let uiHidden = false;
+        function toggleUI() {
+            // Esta función se llama con cada scroll/tap para ocultar UI
+            // Implementación simple: no auto-ocultamos por ahora
+        }
+        
+        // Tap en pantalla para mostrar/ocultar UI
+        document.body.addEventListener('click', (e) => {
+            // No ocultar si se clickeó en botones
+            if (e.target.closest('button')) return;
+            uiHidden = !uiHidden;
+            document.getElementById('readerHeader').classList.toggle('hidden', uiHidden);
+            document.getElementById('readerFooter').classList.toggle('hidden', uiHidden);
+            document.getElementById('modeSelector').classList.toggle('hidden', uiHidden);
+        });
+
+        function updatePageIndicator() {
+            const indicator = document.getElementById('pageIndicator');
+            if (indicator) {
+                indicator.innerText = `📄 ${currentPage} / ${totalPages}`;
+            }
+        }
+
+        // Guardar última página leída
+        function saveLastPage() {
+            if (currentChapter) {
+                localStorage.setItem(`lastPage_${currentChapter.id}`, currentPage);
+                localStorage.setItem('lastChapterId', currentChapter.id);
+            }
+        }
+
+        // Cargar última página guardada
+        function loadLastPage() {
+            if (currentChapter) {
+                const saved = localStorage.getItem(`lastPage_${currentChapter.id}`);
+                if (saved) {
+                    currentPage = parseInt(saved);
+                    currentPage = Math.min(currentPage, totalPages);
+                    updatePageIndicator();
+                }
+            }
+        }
+
+        // Funciones de navegación
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                goToPage(currentPage);
+            } else {
+                nextChapter();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                goToPage(currentPage);
+            } else {
+                prevChapter();
+            }
+        }
+
+        function goToPage(page) {
+            if (currentMode === 'cascada') {
+                const container = document.getElementById('cascadaContainer');
+                if (container) {
+                    let accumulatedHeight = 0;
+                    const images = container.querySelectorAll('img');
+                    for (let i = 0; i < page - 1 && i < images.length; i++) {
+                        accumulatedHeight += images[i].clientHeight;
+                    }
+                    container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
+                }
+            } else {
+                const container = document.getElementById('pagesContainer');
+                if (container) {
+                    const pageWidth = container.clientWidth;
+                    container.scrollTo({ left: (page - 1) * pageWidth, behavior: 'smooth' });
+                }
+            }
+            currentPage = page;
+            updatePageIndicator();
+            saveLastPage();
+        }
+
+        async function nextChapter() {
+            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+            if (currentIndex > 0) {
+                const nextChap = totalChapters[currentIndex - 1];
+                window.location.href = `lector.html?chapter=${nextChap.number}`;
+            } else {
+                alert('📖 ¡Es el último capítulo!');
+            }
+        }
+
+        async function prevChapter() {
+            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+            if (currentIndex < totalChapters.length - 1) {
+                const prevChap = totalChapters[currentIndex + 1];
+                window.location.href = `lector.html?chapter=${prevChap.number}`;
+            } else {
+                alert('📖 ¡Es el primer capítulo!');
+            }
+        }
+
+        // Cambiar modo de lectura
+        function setMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('readerMode', mode);
+            
+            // Actualizar botones
+            document.getElementById('cascadaBtn').classList.toggle('active', mode === 'cascada');
+            document.getElementById('paginasBtn').classList.toggle('active', mode === 'paginas');
+            
+            // Recargar el capítulo con el nuevo modo
+            if (currentChapter) {
+                loadChapter(currentChapter.number);
+            }
+        }
+
+        // Cargar modo guardado
+        function loadSavedMode() {
+            const savedMode = localStorage.getItem('readerMode');
+            if (savedMode === 'paginas' || savedMode === 'cascada') {
+                currentMode = savedMode;
+            }
+            document.getElementById('cascadaBtn').classList.toggle('active', currentMode === 'cascada');
+            document.getElementById('paginasBtn').classList.toggle('active', currentMode === 'paginas');
+        }
+
+        // Inicializar
+        async function init() {
+            loadSavedMode();
+            
+            const chapterNum = getChapterFromURL();
+            await loadChaptersList();
+            await loadChapter(chapterNum);
+            loadLastPage();
+            
+            // Configurar event listeners
+            document.getElementById('prevPageBtn').onclick = prevPage;
+            document.getElementById('nextPageBtn').onclick = nextPage;
+            document.getElementById('prevChapterBtn').onclick = prevChapter;
+            document.getElementById('nextChapterBtn').onclick = nextChapter;
+            document.getElementById('cascadaBtn').onclick = () => setMode('cascada');
+            document.getElementById('paginasBtn').onclick = () => setMode('paginas');
+        }
+
+        init();
+    </script>
+</body>
+</html>
