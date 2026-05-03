@@ -1,29 +1,34 @@
 {
   "ads": [
     {
-      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Oficial",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock",
       "title": "Blue Lock Oficial",
-      "link": "https://bluelock.com"
+      "link": "https://bluelock.com",
+      "action": "url"
     },
     {
-      "imageUrl": "https://i.imgur.com/YujKD5Q.jpeg",
-      "title": "Nuevo Episodio",
-      "link": "https://i.imgur.com/YujKD5Q.jpeg"
+      "imageUrl": "https://via.placeholder.com/400x200/ff6600/ffffff?text=Nuevo+Capítulo",
+      "title": "Nuevo Capítulo",
+      "link": "",
+      "action": "latest_chapter"
     },
     {
-      "imageUrl": "https://via.placeholder.com/400x200/9900ff/ffffff?text=Merchandising+Oficial",
-      "title": "Merchandising Oficial",
-      "link": ""
-    },
-    {
-      "imageUrl": "https://via.placeholder.com/400x200/00ff88/ffffff?text=Eventos+Blue+Lock",
-      "title": "Eventos Blue Lock",
-      "link": ""
-    },
-    {
-      "imageUrl": "https://via.placeholder.com/400x200/ff3366/ffffff?text=Episode+Nagi+Spin-off",
+      "imageUrl": "https://via.placeholder.com/400x200/9900ff/ffffff?text=Episode+Nagi",
       "title": "Episode Nagi",
-      "link": ""
+      "link": "",
+      "action": "spin_off"
+    },
+    {
+      "imageUrl": "https://via.placeholder.com/400x200/00ff88/ffffff?text=Merchandising",
+      "title": "Merchandising",
+      "link": "https://example.com",
+      "action": "url"
+    },
+    {
+      "imageUrl": "https://via.placeholder.com/400x200/ff3366/ffffff?text=Eventos",
+      "title": "Eventos Blue Lock",
+      "link": "",
+      "action": "none"
     }
   ]
 }
