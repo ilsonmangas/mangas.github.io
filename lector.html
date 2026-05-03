@@ -116,7 +116,7 @@
             background: black;
         }
 
-        /* Sección de comentarios SIN REGISTRO */
+        /* Sección de comentarios ISSO */
         .comments-section {
             padding: 30px 16px 120px 16px;
             background: #0a0a1a;
@@ -134,123 +134,27 @@
             gap: 10px;
         }
 
-        /* Formulario de comentario */
-        .comment-form {
-            margin-bottom: 30px;
-            animation: fadeIn 0.3s ease;
+        /* Estilos para que Isso combine con Blue Lock */
+        #isso-thread {
+            background: transparent;
+            color: #eee !important;
         }
-
-        .comment-form input,
-        .comment-form textarea {
-            width: 100%;
-            background: #1a1a2e;
-            border: 1px solid #2a2a3e;
-            padding: 12px;
-            border-radius: 12px;
-            color: white;
-            font-size: 14px;
-            font-family: inherit;
-            margin-bottom: 12px;
-            transition: all 0.2s;
+        #isso-thread .isso-comment {
+            border-top: 1px solid rgba(0, 212, 255, 0.1) !important;
+            padding-top: 15px !important;
         }
-
-        .comment-form input:focus,
-        .comment-form textarea:focus {
-            outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 10px rgba(0,212,255,0.2);
+        #isso-thread .isso-author {
+            color: #00d4ff !important;
+            font-weight: bold !important;
         }
-
-        .comment-form textarea {
-            min-height: 80px;
-            resize: vertical;
+        #isso-thread .isso-postbox {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid #1a1a2e !important;
+            border-radius: 10px;
         }
-
-        .comment-form button {
-            background: linear-gradient(135deg, #00d4ff, #090979);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .comment-form button:active {
-            transform: scale(0.95);
-        }
-
-        /* Lista de comentarios */
-        .comments-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .comment-card {
-            background: #12122a;
-            border-radius: 16px;
-            padding: 14px;
-            border-left: 3px solid #00d4ff;
-            transition: all 0.2s;
-        }
-
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .comment-author {
-            font-weight: bold;
-            color: #00d4ff;
-            font-size: 14px;
-        }
-
-        .comment-date {
-            font-size: 10px;
-            color: #888;
-        }
-
-        .comment-text {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #ddd;
-            word-break: break-word;
-        }
-
-        .delete-comment {
-            background: rgba(255,51,102,0.2);
-            border: none;
-            color: #ff3366;
-            padding: 4px 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 10px;
-            transition: all 0.2s;
-        }
-
-        .delete-comment:active {
-            background: #ff3366;
-            color: white;
-        }
-
-        .no-comments {
-            text-align: center;
-            color: #666;
-            padding: 30px;
-            font-style: italic;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        #isso-thread textarea {
+            color: white !important;
+            background: rgba(0, 0, 0, 0.2) !important;
         }
 
         /* Loading */
@@ -298,104 +202,21 @@
     <div class="comments-section" id="commentsSection">
         <div class="comments-title">
             <span>💬</span>
-            <span>Comentarios (Anónimos)</span>
+            <span>Comentarios</span>
         </div>
-        
-        <!-- Formulario de comentario sin registro -->
-        <div class="comment-form">
-            <input type="text" id="commentAuthor" placeholder="Tu nombre (opcional)" maxlength="30">
-            <textarea id="commentText" placeholder="Escribe tu comentario aquí... (sin registro, anónimo)" maxlength="500"></textarea>
-            <button id="submitComment">✍️ Publicar comentario</button>
-        </div>
-        
-        <!-- Lista de comentarios -->
-        <div id="commentsList" class="comments-list">
-            <div class="no-comments">Cargando comentarios...</div>
-        </div>
+        <!-- Contenedor Único de ISSO -->
+        <section id="isso-thread"></section>
     </div>
 
     <script>
         const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
+        const ISSO_URL = 'https://mi-blog-comments-production.up.railway.app/';
+        
         let currentChapter = null;
         let totalPages = 0;
         let currentPage = 1;
         let totalChapters = [];
 
-        // ==================== SISTEMA DE COMENTARIOS LOCAL ====================
-        
-        // Cargar comentarios desde localStorage
-        function loadComments(chapterId) {
-            const key = `comments_chapter_${chapterId}`;
-            const saved = localStorage.getItem(key);
-            return saved ? JSON.parse(saved) : [];
-        }
-        
-        // Guardar comentarios en localStorage
-        function saveComments(chapterId, comments) {
-            const key = `comments_chapter_${chapterId}`;
-            localStorage.setItem(key, JSON.stringify(comments));
-        }
-        
-        // Renderizar comentarios
-        function renderComments(chapterId) {
-            const comments = loadComments(chapterId);
-            const container = document.getElementById('commentsList');
-            
-            if (comments.length === 0) {
-                container.innerHTML = '<div class="no-comments">💭 Sé el primero en comentar</div>';
-                return;
-            }
-            
-            container.innerHTML = comments.map((comment, index) => `
-                <div class="comment-card" data-index="${index}">
-                    <div class="comment-header">
-                        <span class="comment-author">${escapeHtml(comment.author) || 'Anónimo'}</span>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <span class="comment-date">${comment.date}</span>
-                            <button class="delete-comment" onclick="deleteComment(${index})">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="comment-text">${escapeHtml(comment.text)}</div>
-                </div>
-            `).join('');
-        }
-        
-        // Agregar comentario
-        function addComment(chapterId, author, text) {
-            if (!text.trim()) {
-                showNotification('✏️ Escribe un comentario primero');
-                return false;
-            }
-            
-            const comments = loadComments(chapterId);
-            comments.unshift({
-                author: author.trim().substring(0, 30) || 'Anónimo',
-                text: text.trim().substring(0, 500),
-                date: new Date().toLocaleString('es-ES')
-            });
-            saveComments(chapterId, comments);
-            renderComments(chapterId);
-            return true;
-        }
-        
-        // Eliminar comentario
-        function deleteComment(index) {
-            const comments = loadComments(currentChapter.id);
-            comments.splice(index, 1);
-            saveComments(currentChapter.id, comments);
-            renderComments(currentChapter.id);
-            showNotification('🗑️ Comentario eliminado');
-        }
-        
-        // Escapar HTML para seguridad
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        // ==================== LECTOR DE MANGA ====================
-        
         function showNotification(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'custom-toast';
@@ -433,6 +254,31 @@
             }
         }
 
+        // Lógica de carga dinámica para ISSO
+        function loadIsso(chapterNumber) {
+            const thread = document.getElementById('isso-thread');
+            if (!thread) return;
+
+            // Limpiar contenedor
+            thread.innerHTML = '';
+
+            // Eliminar script anterior si existe
+            const oldScript = document.getElementById('isso-script');
+            if (oldScript) oldScript.remove();
+
+            // Crear el nuevo script inyectando la ID del capítulo
+            const script = document.createElement('script');
+            script.id = 'isso-script';
+            script.src = `${ISSO_URL}js/embed.min.js`;
+            script.setAttribute('data-isso', ISSO_URL);
+            // Esto asegura que cada capítulo tenga sus propios comentarios
+            script.setAttribute('data-isso-id', `blue_lock_chap_${chapterNumber}`);
+            script.setAttribute('data-isso-css', 'true');
+            script.async = true;
+            
+            document.head.appendChild(script);
+        }
+
         async function loadChapter(chapterNumber) {
             const container = document.getElementById('readerContent');
             try {
@@ -457,10 +303,9 @@
                 document.getElementById('loadingScreen').style.display = 'none';
                 updatePageIndicator();
                 
-                // Cargar comentarios del capítulo
-                renderComments(currentChapter.id);
+                // CARGAR ISSO PARA ESTE CAPÍTULO
+                loadIsso(chapterNumber);
                 
-                // Scroll listener
                 window.addEventListener('scroll', handleScroll);
                 
             } catch (error) {
@@ -486,7 +331,6 @@
                 }
             });
 
-            // Ocultar barra al scrollear
             const footer = document.getElementById('readerFooter');
             footer.classList.add('hidden');
             clearTimeout(window.scrollTimer);
@@ -512,9 +356,8 @@
             }
         }
 
-        // Toggle UI al tocar
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('button') && !e.target.closest('.comment-form')) {
+            if (!e.target.closest('button') && !e.target.closest('#isso-thread')) {
                 document.getElementById('readerFooter').classList.toggle('hidden');
             }
         });
@@ -526,16 +369,6 @@
             
             document.getElementById('prevChapterBtn').onclick = () => navigateChapter('prev');
             document.getElementById('nextChapterBtn').onclick = () => navigateChapter('next');
-            
-            // Comentarios
-            document.getElementById('submitComment').onclick = () => {
-                const author = document.getElementById('commentAuthor').value;
-                const text = document.getElementById('commentText').value;
-                if (addComment(currentChapter.id, author, text)) {
-                    document.getElementById('commentText').value = '';
-                    showNotification('✅ Comentario publicado');
-                }
-            };
         }
 
         init();
