@@ -69,9 +69,6 @@ header h1 {
     height: 250px;
     overflow: hidden;
     background: linear-gradient(135deg, #00d4ff, #090979);
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .chapter-cover img {
@@ -109,18 +106,47 @@ footer {
     margin-top: 2rem;
 }
 
-footer code {
-    background: #00d4ff;
-    color: #1a1a2e;
-    padding: 4px 8px;
-    border-radius: 5px;
-}
-
 .no-results {
     text-align: center;
     padding: 3rem;
     font-size: 1.2rem;
     color: #888;
+}
+
+/* Vista lista */
+.list-view {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Controles */
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem 1rem 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.sort-select, .view-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.view-btn.active {
+    background: #00d4ff;
+    color: black;
+}
+
+.view-buttons {
+    display: flex;
+    gap: 8px;
 }
 
 @media (max-width: 768px) {
@@ -135,5 +161,9 @@ footer code {
     
     .chapter-cover {
         height: 200px;
+    }
+    
+    .controls-row {
+        padding: 0 1rem 1rem 1rem;
     }
 }
