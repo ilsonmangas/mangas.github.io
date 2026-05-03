@@ -4,26 +4,24 @@
       "id": 1,
       "episode": 1,
       "title": "Sueño",
-      "description": "Isagi Yoichi sueña con llevar a Japón a la victoria en el Mundial.",
+      "description": "Isagi Yoichi pierde la oportunidad de ir al nacional y recibe una invitación para un programa misterioso.",
       "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+1",
       "videoUrl": "https://odysee.com/$/embed/@Animenew12:4/BlueLock-01.subes.AnimeYT.es:c"
-    }
-
+    },
     {
       "id": 2,
       "episode": 2,
       "title": "Monstruo",
-      "description": "Isagi Yoichi sueña con llevar a Japón a la victoria en el Mundial.",
-      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+1",
+      "description": "Los 300 delanteros llegan a Blue Lock y enfrentan su primera prueba de eliminación: el juego de las traes.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+2",
       "videoUrl": "https://odysee.com/@Animenew12:4/BlueLock-02.subes.AnimeYT.es:5"
-    }
-
+    },
     {
       "id": 3,
       "episode": 3,
       "title": "El cero del fútbol",
-      "description": "Isagi Yoichi sueña con llevar a Japón a la victoria en el Mundial.",
-      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+1",
+      "description": "El Equipo Z comienza su primer partido de la selección contra el Equipo X, liderado por Barou.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+3",
       "videoUrl": "https://odysee.com/@Animenew12:4/BlueLock-03.subes.AnimeYT.es:b"
     }
   ]
