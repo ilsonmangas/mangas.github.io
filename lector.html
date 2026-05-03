@@ -65,7 +65,7 @@
             background: rgba(255,255,255,0.2);
         }
 
-        /* Contenedor de imágenes - MODO CASCADA */
+        /* Contenedor de imágenes - MODO CASCADA (sin separación) */
         .cascada-container {
             padding-top: 10px;
             padding-bottom: 60px;
@@ -75,63 +75,6 @@
             width: 100%;
             display: block;
             background: black;
-        }
-
-        /* Contenedor de imágenes - MODO PÁGINAS */
-        .pages-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            height: 100vh;
-            scroll-behavior: smooth;
-        }
-
-        .pages-container .page {
-            flex: 0 0 100%;
-            scroll-snap-align: start;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: black;
-        }
-
-        .pages-container img {
-            width: 100%;
-            height: auto;
-            max-height: 100vh;
-            object-fit: contain;
-        }
-
-        /* Selector de modo */
-        .mode-selector {
-            position: fixed;
-            right: 16px;
-            top: 16px;
-            background: rgba(0,0,0,0.9);
-            border-radius: 30px;
-            padding: 8px;
-            z-index: 1000;
-            display: flex;
-            gap: 8px;
-            backdrop-filter: blur(10px);
-        }
-
-        .mode-selector.hidden {
-            display: none;
-        }
-
-        .mode-btn {
-            background: none;
-            border: none;
-            padding: 10px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        .mode-btn.active {
-            background: #00d4ff;
-            color: black;
         }
 
         /* Loading */
@@ -159,19 +102,13 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Ocultar scrollbar en modo páginas */
-        .pages-container::-webkit-scrollbar {
-            display: none;
+        /* Zoom con gestos */
+        .zoom-container {
+            touch-action: pinch-zoom;
         }
     </style>
 </head>
 <body>
-    <!-- Selector de modo (cascada/páginas) -->
-    <div class="mode-selector" id="modeSelector">
-        <button class="mode-btn" id="cascadaBtn" title="Modo cascada (vertical)">📜</button>
-        <button class="mode-btn" id="paginasBtn" title="Modo páginas (horizontal)">📖</button>
-    </div>
-
     <!-- Barra inferior con indicador de página + botones capítulo -->
     <div class="reader-footer" id="readerFooter">
         <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
@@ -190,7 +127,6 @@
         let currentChapter = null;
         let totalPages = 0;
         let currentPage = 1;
-        let currentMode = 'cascada';
         let totalChapters = [];
 
         // Obtener capítulo de la URL (?chapter=345)
@@ -202,8 +138,8 @@
 
         // Enviar mensaje a Flutter cuando cambia de capítulo
         function notifyFlutter(chapterNumber, chapterTitle) {
-            if (window.FlutterNotifier) {
-                window.FlutterNotifier.postMessage(JSON.stringify({
+            if (window.ChapterNotifier) {
+                window.ChapterNotifier.postMessage(JSON.stringify({
                     chapter: chapterNumber,
                     title: chapterTitle
                 }));
@@ -271,55 +207,29 @@
             }
         }
 
+        // Renderizar el lector (solo modo cascada)
         function renderReader(imageUrls) {
             const container = document.getElementById('readerContent');
             
-            if (currentMode === 'cascada') {
-                container.innerHTML = `
-                    <div class="cascada-container" id="cascadaContainer">
-                        ${imageUrls.map((url, idx) => `
-                            <img src="${url}" 
-                                 loading="lazy"
-                                 onerror="this.style.display='none'"
-                                 alt="Página ${idx + 1}">
-                        `).join('')}
-                    </div>
-                `;
-                
-                const cascadaContainer = document.getElementById('cascadaContainer');
-                if (cascadaContainer) {
-                    cascadaContainer.addEventListener('scroll', () => {
-                        updateCurrentPageFromScroll();
-                        toggleUIOnScroll();
-                    });
-                }
-            } else {
-                container.innerHTML = `
-                    <div class="pages-container" id="pagesContainer">
-                        ${imageUrls.map((url, idx) => `
-                            <div class="page" data-page="${idx + 1}">
-                                <img src="${url}" 
-                                     onerror="this.style.display='none'"
-                                     alt="Página ${idx + 1}">
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                
-                const pagesContainer = document.getElementById('pagesContainer');
-                if (pagesContainer) {
-                    pagesContainer.addEventListener('scroll', () => {
-                        const scrollLeft = pagesContainer.scrollLeft;
-                        const pageWidth = pagesContainer.clientWidth;
-                        const newPage = Math.round(scrollLeft / pageWidth) + 1;
-                        if (newPage !== currentPage && newPage >= 1 && newPage <= totalPages) {
-                            currentPage = newPage;
-                            updatePageIndicator();
-                            saveLastPage();
-                        }
-                        toggleUIOnScroll();
-                    });
-                }
+            // MODO CASCADA - Todas las imágenes pegadas verticalmente
+            container.innerHTML = `
+                <div class="cascada-container" id="cascadaContainer">
+                    ${imageUrls.map((url, idx) => `
+                        <img src="${url}" 
+                             loading="lazy"
+                             onerror="this.style.display='none'"
+                             alt="Página ${idx + 1}"
+                             class="zoomable-image">
+                    `).join('')}
+                </div>
+            `;
+            
+            const cascadaContainer = document.getElementById('cascadaContainer');
+            if (cascadaContainer) {
+                cascadaContainer.addEventListener('scroll', () => {
+                    updateCurrentPageFromScroll();
+                    toggleUIOnScroll();
+                });
             }
             
             const loadingDiv = document.querySelector('.loading');
@@ -334,21 +244,14 @@
                 updatePageIndicator();
                 
                 setTimeout(() => {
-                    if (currentMode === 'cascada') {
-                        const container = document.getElementById('cascadaContainer');
-                        if (container) {
-                            let accumulatedHeight = 0;
-                            const images = container.querySelectorAll('img');
-                            for (let i = 0; i < currentPage - 1 && i < images.length; i++) {
-                                accumulatedHeight += images[i].clientHeight;
-                            }
-                            container.scrollTop = accumulatedHeight;
+                    const container = document.getElementById('cascadaContainer');
+                    if (container) {
+                        let accumulatedHeight = 0;
+                        const images = container.querySelectorAll('img');
+                        for (let i = 0; i < currentPage - 1 && i < images.length; i++) {
+                            accumulatedHeight += images[i].clientHeight;
                         }
-                    } else {
-                        const container = document.getElementById('pagesContainer');
-                        if (container) {
-                            container.scrollLeft = (currentPage - 1) * container.clientWidth;
-                        }
+                        container.scrollTop = accumulatedHeight;
                     }
                 }, 300);
             } else {
@@ -390,15 +293,12 @@
         let scrollTimeout;
         function toggleUIOnScroll() {
             const footer = document.getElementById('readerFooter');
-            const selector = document.getElementById('modeSelector');
             
             footer.classList.add('hidden');
-            if (selector) selector.classList.add('hidden');
             
             if (scrollTimeout) clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 footer.classList.remove('hidden');
-                if (selector) selector.classList.remove('hidden');
             }, 2000);
         }
 
@@ -407,14 +307,11 @@
             if (e.target.closest('button')) return;
             uiManualHidden = !uiManualHidden;
             const footer = document.getElementById('readerFooter');
-            const selector = document.getElementById('modeSelector');
             
             if (uiManualHidden) {
                 footer.classList.add('hidden');
-                if (selector) selector.classList.add('hidden');
             } else {
                 footer.classList.remove('hidden');
-                if (selector) selector.classList.remove('hidden');
             }
         });
 
@@ -472,21 +369,14 @@
         }
 
         function goToPage(page) {
-            if (currentMode === 'cascada') {
-                const container = document.getElementById('cascadaContainer');
-                if (container) {
-                    let accumulatedHeight = 0;
-                    const images = container.querySelectorAll('img');
-                    for (let i = 0; i < page - 1 && i < images.length; i++) {
-                        accumulatedHeight += images[i].clientHeight;
-                    }
-                    container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
+            const container = document.getElementById('cascadaContainer');
+            if (container) {
+                let accumulatedHeight = 0;
+                const images = container.querySelectorAll('img');
+                for (let i = 0; i < page - 1 && i < images.length; i++) {
+                    accumulatedHeight += images[i].clientHeight;
                 }
-            } else {
-                const container = document.getElementById('pagesContainer');
-                if (container) {
-                    container.scrollTo({ left: (page - 1) * container.clientWidth, behavior: 'smooth' });
-                }
+                container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
             }
             currentPage = page;
             updatePageIndicator();
@@ -516,37 +406,13 @@
             }
         }
 
-        function setMode(mode) {
-            currentMode = mode;
-            localStorage.setItem('readerMode', mode);
-            
-            document.getElementById('cascadaBtn').classList.toggle('active', mode === 'cascada');
-            document.getElementById('paginasBtn').classList.toggle('active', mode === 'paginas');
-            
-            if (currentChapter) {
-                loadChapter(currentChapter.number);
-            }
-        }
-
-        function loadSavedMode() {
-            const savedMode = localStorage.getItem('readerMode');
-            if (savedMode === 'paginas' || savedMode === 'cascada') {
-                currentMode = savedMode;
-            }
-            document.getElementById('cascadaBtn').classList.toggle('active', currentMode === 'cascada');
-            document.getElementById('paginasBtn').classList.toggle('active', currentMode === 'paginas');
-        }
-
         async function init() {
-            loadSavedMode();
             const chapterNum = getChapterFromURL();
             await loadChaptersList();
             await loadChapter(chapterNum);
             
             document.getElementById('prevChapterBtn').onclick = prevChapter;
             document.getElementById('nextChapterBtn').onclick = nextChapter;
-            document.getElementById('cascadaBtn').onclick = () => setMode('cascada');
-            document.getElementById('paginasBtn').onclick = () => setMode('paginas');
         }
 
         init();
