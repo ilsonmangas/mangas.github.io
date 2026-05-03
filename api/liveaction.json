@@ -1,12 +1,13 @@
 {
-  "episodes": [
+  "movies": [
     {
       "id": 1,
-      "episode": 1,
-      "title": "Blue Lock: Live Action Trailer 1",
-      "description": "Adaptación live action del manga bestseller.",
-      "imageUrl": "https://tu-servidor.com/liveaction/poster.jpg",
-      "videoUrl": "https://odysee.com/Blue-Lock-(live-action)-%EF%BD%9C-Teaser-Sub-Espa%C3%B1ol-(2026):14caf2b50794f803bc831e36e5daf2657b1091ca"
+      "title": "Blue Lock: Live Action Trailer",
+      "description": "Adaptación live action del manga bestseller. La historia de Isagi Yoichi y su sueño de llevar a Japón a la victoria en el Mundial.",
+      "imageUrl": "https://via.placeholder.com/400x200/ff6600/ffffff?text=Live+Action",
+      "videoUrl": "https://odysee.com/Blue-Lock-(live-action)-%EF%BD%9C-Teaser-Sub-Espa%C3%B1ol-(2026):14caf2b50794f803bc831e36e5daf2657b1091ca",
+      "duration": "2h 00min",
+      "year": 2025
     }
   ]
 }
