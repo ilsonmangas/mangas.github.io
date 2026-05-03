@@ -1,0 +1,12 @@
+{
+  "episodes": [
+    {
+      "id": 1,
+      "episode": 1,
+      "title": "Blue Lock: Live Action",
+      "description": "Adaptación live action del manga bestseller.",
+      "imageUrl": "https://tu-servidor.com/liveaction/poster.jpg",
+      "videoUrl": "https://www.youtube.com/embed/VIDEO_ID"
+    }
+  ]
+}
