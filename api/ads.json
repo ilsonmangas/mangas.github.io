@@ -1,0 +1,29 @@
+{
+  "ads": [
+    {
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Oficial",
+      "title": "Blue Lock Oficial",
+      "link": "https://bluelock.com"
+    },
+    {
+      "imageUrl": "https://via.placeholder.com/400x200/ff6600/ffffff?text=Nuevo+Episodio+Disponible",
+      "title": "Nuevo Episodio",
+      "link": ""
+    },
+    {
+      "imageUrl": "https://via.placeholder.com/400x200/9900ff/ffffff?text=Merchandising+Oficial",
+      "title": "Merchandising Oficial",
+      "link": ""
+    },
+    {
+      "imageUrl": "https://via.placeholder.com/400x200/00ff88/ffffff?text=Eventos+Blue+Lock",
+      "title": "Eventos Blue Lock",
+      "link": ""
+    },
+    {
+      "imageUrl": "https://via.placeholder.com/400x200/ff3366/ffffff?text=Episode+Nagi+Spin-off",
+      "title": "Episode Nagi",
+      "link": ""
+    }
+  ]
+}
