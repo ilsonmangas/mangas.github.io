@@ -1,15 +1,23 @@
 // Base de datos de capítulos de Blue Lock
 const chaptersData = [
+    { id: 345, number: 345, title: "El Despertar del Depredador", pages: 45, volume: 14 },
+    { id: 344, number: 344, title: "El Nuevo Mundo", pages: 48, volume: 14 },
+    { id: 343, number: 343, title: "La Evolución", pages: 52, volume: 14 },
+    { id: 342, number: 342, title: "El Duelo Final", pages: 50, volume: 14 },
+    { id: 341, number: 341, title: "El Despertar", pages: 47, volume: 14 },
+    { id: 340, number: 340, title: "La Estrategia", pages: 49, volume: 14 },
+    { id: 339, number: 339, title: "El Contraataque", pages: 51, volume: 13 },
+    { id: 338, number: 338, title: "La Defensa", pages: 46, volume: 13 },
+    { id: 337, number: 337, title: "El Gol de la Victoria", pages: 53, volume: 13 },
+    { id: 336, number: 336, title: "La Presión", pages: 48, volume: 13 },
+    { id: 335, number: 335, title: "El Límite", pages: 50, volume: 13 },
     { id: 1, number: 1, title: "Sueño", pages: 52, volume: 1 },
     { id: 2, number: 2, title: "El Monstruo", pages: 48, volume: 1 },
-    { id: 342, number: 342, title: "Arrebatando la corona", pages: 19, volume: 38 },
-    { id: 343, number: 343, title: "Vivien Hugo", pages: 20, volume: 38 },
-    { id: 344, number: 344, title: "Rebelde", pages: 20, volume: 38 },
-    { id: 345, number: 345, title: "Verdadero final", pages: 22, volume: 39 }
+    { id: 3, number: 3, title: "El Comienzo", pages: 55, volume: 1 },
 ];
 
-// Generar capítulos del 6 al 344 automáticamente
-for (let i = 6; i <= 344; i++) {
+// Generar capítulos del 4 al 334 automáticamente
+for (let i = 4; i <= 334; i++) {
     const volume = Math.ceil(i / 25);
     chaptersData.push({
         id: i,
@@ -19,6 +27,3 @@ for (let i = 6; i <= 344; i++) {
         volume: volume
     });
 }
-
-// Ordenar por número de capítulo (descendente para mostrar nuevos primero)
-chaptersData.sort((a, b) => b.number - a.number);
