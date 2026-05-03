@@ -5,16 +5,8 @@
       "episode": 1,
       "title": "El sueño",
       "description": "Isagi Yoichi sueña con llevar a Japón a la victoria en el Mundial.",
-      "imageUrl": "https://i.ytimg.com/vi/3MXQLRLyNc0/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCwxNB_hAPCiLGj7ZxnxC3a8KKFrA",
-      "videoUrl": "https://www.youtube.com/embed/VIDEO_ID"
-    },
-    {
-      "id": 2,
-      "episode": 2,
-      "title": "El monstruo",
-      "description": "Comienza la selección Blue Lock.",
-      "imageUrl": "https://tu-servidor.com/anime/ep2.jpg",
-      "videoUrl": "https://www.youtube.com/embed/VIDEO_ID"
+      "imageUrl": "https://tu-servidor.com/imagenes/ep1.jpg",
+      "videoUrl": "https://mega.nz/embed/TJ5gkIzD#GzvPMIk5Q_RFOWy1EKPKmi3cR4v0K8NyoVwCzTvB9rE"
     }
   ]
 }
