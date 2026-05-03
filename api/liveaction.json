@@ -3,10 +3,26 @@
     {
       "id": 1,
       "episode": 1,
-      "title": "Blue Lock: Live Action (Pronto)",
+      "title": "Blue Lock: Live Action Trailer 1",
       "description": "Adaptación live action del manga bestseller.",
       "imageUrl": "https://tu-servidor.com/liveaction/poster.jpg",
-      "videoUrl": "#"
+      "videoUrl": "https://www.youtube.com/embed/DVJYgU33ABw?autoplay=1&rel=0&fs=1"
+    },
+    {
+      "id": 2,
+      "episode": 2,
+      "title": "Blue Lock: Live Action Trailer 2",
+      "description": "Adaptación live action del manga bestseller.",
+      "imageUrl": "https://tu-servidor.com/liveaction/poster.jpg",
+      "videoUrl": "https://www.youtube.com/embed/tAbCoOPRHHU?autoplay=1&rel=0&fs=1"
+    },
+    {
+      "id": 3,
+      "episode": 3,
+      "title": "Blue Lock: Live Action Trailer 3",
+      "description": "Adaptación live action del manga bestseller.",
+      "imageUrl": "https://tu-servidor.com/liveaction/poster.jpg",
+      "videoUrl": "https://www.youtube.com/embed/nC6snklpBaY?autoplay=1&rel=0&fs=1"
     }
   ]
 }
