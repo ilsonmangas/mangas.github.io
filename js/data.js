@@ -12,8 +12,10 @@ const chaptersData = [
     { id: 336, number: 336, title: "La Presión", pages: 48, volume: 13 },
     { id: 335, number: 335, title: "El Límite", pages: 50, volume: 13 },
     { id: 1, number: 1, title: "Sueño", pages: 78, volume: 1 },
-    { id: 2, number: 2, title: "El Monstruo", pages: 48, volume: 1 },
-    { id: 3, number: 3, title: "El Comienzo", pages: 55, volume: 1 },
+    { id: 2, number: 2, title: "Mudanza", pages: 76, volume: 1 },
+    { id: 3, number: 3, title: "Monstruo", pages: 27, volume: 1 },
+    { id: 4, number: 4, title: "Ahora", pages: 22, volume: 1 },
+    { id: 5, number: 5, title: "Fútbol desde cero", pages: 26, volume: 2 },
 ];
 
 // Generar capítulos del 4 al 334 automáticamente
