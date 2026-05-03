@@ -4,7 +4,7 @@ const chaptersData = [
     { id: 344, number: 344, title: "El Nuevo Mundo", pages: 48, volume: 14 },
     { id: 343, number: 343, title: "La Evolución", pages: 52, volume: 14 },
     { id: 342, number: 342, title: "El Duelo Final", pages: 50, volume: 14 },
-    { id: 341, number: 341, title: "El Despertar", pages: 47, volume: 14 },
+    { id: 341, number: 341, title: "Elección para el futuro", pages: 21, volume: 38 },
     { id: 340, number: 340, title: "La Estrategia", pages: 49, volume: 14 },
     { id: 339, number: 339, title: "El Contraataque", pages: 51, volume: 13 },
     { id: 338, number: 338, title: "La Defensa", pages: 46, volume: 13 },
