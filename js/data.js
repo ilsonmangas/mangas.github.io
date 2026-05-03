@@ -11,7 +11,7 @@ const chaptersData = [
     { id: 337, number: 337, title: "El Gol de la Victoria", pages: 53, volume: 13 },
     { id: 336, number: 336, title: "La Presión", pages: 48, volume: 13 },
     { id: 335, number: 335, title: "El Límite", pages: 50, volume: 13 },
-    { id: 1, number: 1, title: "Sueño", pages: 52, volume: 1 },
+    { id: 1, number: 1, title: "Sueño", pages: 78, volume: 1 },
     { id: 2, number: 2, title: "El Monstruo", pages: 48, volume: 1 },
     { id: 3, number: 3, title: "El Comienzo", pages: 55, volume: 1 },
 ];
