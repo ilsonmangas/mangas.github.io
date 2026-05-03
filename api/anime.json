@@ -14,15 +14,183 @@
       "title": "Monstruo",
       "description": "Los 300 delanteros llegan a Blue Lock y enfrentan su primera prueba de eliminación: el juego de las traes.",
       "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+2",
-      "videoUrl": "https://odysee.com/@Animenew12:4/BlueLock-02.subes.AnimeYT.es:5"
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-2:0"
     },
     {
       "id": 3,
       "episode": 3,
-      "title": "El cero del fútbol",
+      "title": "El \"cero\" del fútbol",
       "description": "El Equipo Z comienza su primer partido de la selección contra el Equipo X, liderado por Barou.",
       "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+3",
-      "videoUrl": "https://odysee.com/@Animenew12:4/BlueLock-03.subes.AnimeYT.es:b"
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-3:9"
+    },
+    {
+      "id": 4,
+      "episode": 4,
+      "title": "Premonición e intuición",
+      "description": "El equipo Z se enfrenta al equipo Y. Isagi intenta encontrar el 'arma' que le permitirá ganar.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+4",
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-4:6"
+    },
+    {
+      "id": 5,
+      "episode": 5,
+      "title": "Para renacer",
+      "description": "Isagi y su equipo luchan por sobrevivir en el torneo mientras descubren nuevas habilidades.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+5",
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-5:7"
+    },
+    {
+      "id": 6,
+      "episode": 6,
+      "title": "Lo siento",
+      "description": "La traición dentro del Equipo Z pone a prueba la confianza de todos durante el partido contra el Equipo W.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+6",
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-6:69"
+    },
+    {
+      "id": 7,
+      "episode": 7,
+      "title": "Subidón",
+      "description": "Chigiri libera su verdadera velocidad y potencial para salvar al equipo de la eliminación.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+7",
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-7:3"
+    },
+    {
+      "id": 8,
+      "episode": 8,
+      "title": "La fórmula para marcar gol",
+      "description": "Isagi analiza sus movimientos para crear una fórmula repetible que le asegure el gol.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+8",
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-8:c"
+    },
+    {
+      "id": 9,
+      "episode": 9,
+      "title": "El despertar",
+      "description": "El partido decisivo contra el Equipo V de Nagi comienza, llevando a todos a sus límites.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+9",
+      "videoUrl": "https://odysee.com/@Takeshii_Anime:0/bluelock-9:8"
+    },
+    {
+      "id": 10,
+      "episode": 10,
+      "title": "Que se quede así",
+      "description": "El Equipo Z lucha contra el talento abrumador del trío del Equipo V.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+10",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bluelock-10:0"
+    },
+    {
+      "id": 11,
+      "episode": 11,
+      "title": "La última pieza",
+      "description": "Isagi descubre la pieza final necesaria para evolucionar y ganar el primer bloque.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+11",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bluelock-11:b"
+    },
+    {
+      "id": 12,
+      "episode": 12,
+      "title": "La segunda fase",
+      "description": "Los sobrevivientes entran en la segunda selección, enfrentando desafíos individuales extremos.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+12",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bluelock-12:8"
+    },
+    {
+      "id": 13,
+      "episode": 13,
+      "title": "Top 3",
+      "description": "Isagi se une a Bachira y Nagi para desafiar a los tres mejores jugadores de Blue Lock.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+13",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bluelock-13:7"
+    },
+    {
+      "id": 14,
+      "episode": 14,
+      "title": "Genios y mediocres",
+      "description": "Tras la derrota, Isagi debe entender la diferencia entre su talento y el de los genios.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+14",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bluelock-14:0"
+    },
+    {
+      "id": 15,
+      "episode": 15,
+      "title": "Asimilación",
+      "description": "Isagi aprende a devorar el talento de los demás para mejorar su propio juego.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+15",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl15:3"
+    },
+    {
+      "id": 16,
+      "episode": 16,
+      "title": "Fusión triple",
+      "description": "La química entre los jugadores crea un nuevo nivel de fútbol táctico y agresivo.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+16",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl16:8"
+    },
+    {
+      "id": 17,
+      "episode": 17,
+      "title": "Paquete",
+      "description": "Isagi debe adaptarse a jugar con Barou, el 'Rey' que se niega a cooperar.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+17",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl17:e"
+    },
+    {
+      "id": 18,
+      "episode": 18,
+      "title": "El escenario de la estrella",
+      "description": "Barou se ve forzado a evolucionar cuando Isagi toma el control del campo.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+18",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl18:f"
+    },
+    {
+      "id": 19,
+      "episode": 19,
+      "title": "Dancing Boy",
+      "description": "Bachira enfrenta su pasado y el 'monstruo' dentro de él durante el partido contra Itoshi Rin.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+19",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl19:c"
+    },
+    {
+      "id": 20,
+      "episode": 20,
+      "title": "Superjuego combinado",
+      "description": "El equipo de Isagi intenta superar la coordinación perfecta de Rin y su equipo.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+20",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bluelock-20:b"
+    },
+    {
+      "id": 21,
+      "episode": 21,
+      "title": "No estoy ahí",
+      "description": "Isagi intenta predecir el futuro del juego superando incluso la visión de Rin.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+21",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl21:7"
+    },
+    {
+      "id": 22,
+      "episode": 22,
+      "title": "La voz",
+      "description": "Bachira despierta su verdadero ego y decide jugar por sí mismo por primera vez.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+22",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl22:9"
+    },
+    {
+      "id": 23,
+      "episode": 23,
+      "title": "Suerte",
+      "description": "El partido final se decide por un factor inesperado que Ego define como 'suerte'.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+23",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl23:4"
+    },
+    {
+      "id": 24,
+      "episode": 24,
+      "title": "Ha llegado la hora",
+      "description": "Se anuncian los resultados finales y comienza el nuevo desafío: enfrentar a la Sub-20 de Japón.",
+      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock+Ep+24",
+      "videoUrl": "https://odysee.com/@Takeshhii_:8/bl24:d"
     }
   ]
 }
