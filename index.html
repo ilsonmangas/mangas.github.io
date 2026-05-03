@@ -5,6 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Blue Lock - Manga Oficial</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos adicionales para el mosaico */
+        .view-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .view-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+        }
+        .view-btn.active {
+            background: #00d4ff;
+            color: black;
+        }
+        .sort-select {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding: 0 16px;
+        }
+        /* Estilo lista */
+        .list-view .chapter-card {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .list-view .chapter-cover {
+            width: 80px;
+            height: 100px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -14,16 +60,29 @@
 
     <main>
         <div class="controls">
-            <input type="text" id="searchInput" placeholder="🔍 Buscar capítulo...">
+            <input type="text" id="searchInput" placeholder="🔍 Clásico buscador...">
+        </div>
+
+        <div class="controls-row">
+            <div class="sort-controls">
+                <label style="color:white;">Ordenar: </label>
+                <select id="sortSelect" class="sort-select">
+                    <option value="desc">⬇ Descendente</option>
+                    <option value="asc">⬆ Ascendente</option>
+                </select>
+            </div>
+            <div class="view-buttons">
+                <button id="gridViewBtn" class="view-btn active">📱 Mosaico</button>
+                <button id="listViewBtn" class="view-btn">📋 Lista</button>
+            </div>
         </div>
 
         <div id="chaptersList" class="chapters-grid"></div>
     </main>
 
     <footer>
-        <p>📱 API disponible en: <code>api/chapters.json</code> - Para usar en app móvil</p>
-        <p>📖 Estructura de imágenes: <code>caps/{capítulo}/{página}.jpg</code></p>
-        <p>📚 <a href="lector.html?chapter=345" style="color:#00d4ff;">Probar lector (Capítulo 345)</a></p>
+        <p>📱 API disponible en: <code>api/chapters.json</code></p>
+        <p>📖 Estructura: <code>caps/{capítulo}/{página}.jpg</code></p>
     </footer>
 
     <script src="js/data.js"></script>
