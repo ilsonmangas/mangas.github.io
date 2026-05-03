@@ -8,6 +8,13 @@
   "baseUrl": "https://ilsonmangas.github.io/mangas.github.io/caps/",
   "chapters": [
     {
+      "id": 1,
+      "number": 1,
+      "title": "Sueño",
+      "pages": 78,
+      "volume": 1
+    },
+    {
       "id": 342,
       "number": 342,
       "title": "Arrebatando la corona",
