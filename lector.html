@@ -52,7 +52,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             padding: 12px 16px;
             z-index: 1000;
             backdrop-filter: blur(10px);
@@ -60,7 +60,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(0,212,255,0.2);
+            border-top: 1px solid rgba(0,212,255,0.3);
         }
 
         .reader-footer.hidden {
@@ -68,7 +68,7 @@
         }
 
         .page-indicator {
-            background: rgba(0,212,255,0.1);
+            background: rgba(0,212,255,0.15);
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -93,18 +93,17 @@
         }
 
         .chapter-nav-buttons button:active {
-            transform: scale(0.9);
+            transform: scale(0.95);
             background: #00d4ff;
             color: black;
         }
 
-        /* Contenedor de imágenes - CORREGIDO */
+        /* Contenedor de imágenes */
         .cascada-container {
             display: flex;
             flex-direction: column;
             width: 100%;
-            /* Quitamos paddings que separaban los componentes */
-            padding: 0; 
+            padding: 0;
             margin: 0;
         }
 
@@ -112,27 +111,146 @@
             width: 100%;
             height: auto;
             display: block;
-            margin: 0; /* Evita espacios entre imágenes */
+            margin: 0;
             padding: 0;
             background: black;
         }
 
-        /* Sección de comentarios - CORREGIDO */
+        /* Sección de comentarios SIN REGISTRO */
         .comments-section {
-            padding: 30px 16px 120px 16px; /* Padding inferior extra para que la barra no tape */
-            background: #05050a;
+            padding: 30px 16px 120px 16px;
+            background: #0a0a1a;
             border-top: 2px solid #00d4ff;
-            margin-top: -1px; /* Solapa un píxel para evitar líneas blancas de renderizado */
+            margin-top: 0;
         }
 
         .comments-title {
             color: #00d4ff;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        /* Formulario de comentario */
+        .comment-form {
+            margin-bottom: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .comment-form input,
+        .comment-form textarea {
+            width: 100%;
+            background: #1a1a2e;
+            border: 1px solid #2a2a3e;
+            padding: 12px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .comment-form input:focus,
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0,212,255,0.2);
+        }
+
+        .comment-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .comment-form button {
+            background: linear-gradient(135deg, #00d4ff, #090979);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .comment-form button:active {
+            transform: scale(0.95);
+        }
+
+        /* Lista de comentarios */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .comment-card {
+            background: #12122a;
+            border-radius: 16px;
+            padding: 14px;
+            border-left: 3px solid #00d4ff;
+            transition: all 0.2s;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #00d4ff;
+            font-size: 14px;
+        }
+
+        .comment-date {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #ddd;
+            word-break: break-word;
+        }
+
+        .delete-comment {
+            background: rgba(255,51,102,0.2);
+            border: none;
+            color: #ff3366;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.2s;
+        }
+
+        .delete-comment:active {
+            background: #ff3366;
+            color: white;
+        }
+
+        .no-comments {
+            text-align: center;
+            color: #666;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Loading */
@@ -164,25 +282,36 @@
 
     <div id="loadingScreen" class="loading">
         <div class="spinner"></div>
-        <div id="loadingText">Entrando a la cancha...</div>
+        <div id="loadingText">Cargando capítulo...</div>
     </div>
 
     <div class="reader-footer" id="readerFooter">
         <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
         <div class="chapter-nav-buttons">
-            <button id="prevChapterBtn">⏮ Ant.</button>
-            <button id="nextChapterBtn">Sig. ⏭</button>
+            <button id="prevChapterBtn">⏮ Capítulo anterior</button>
+            <button id="nextChapterBtn">Capítulo siguiente ⏭</button>
         </div>
     </div>
 
     <div id="readerContent"></div>
 
-    <div class="comments-section" id="commentsSection" style="display: none;">
+    <div class="comments-section" id="commentsSection">
         <div class="comments-title">
             <span>💬</span>
-            <span>Análisis del Partido (Comentarios)</span>
+            <span>Comentarios (Anónimos)</span>
         </div>
-        <div id="disqus_thread"></div>
+        
+        <!-- Formulario de comentario sin registro -->
+        <div class="comment-form">
+            <input type="text" id="commentAuthor" placeholder="Tu nombre (opcional)" maxlength="30">
+            <textarea id="commentText" placeholder="Escribe tu comentario aquí... (sin registro, anónimo)" maxlength="500"></textarea>
+            <button id="submitComment">✍️ Publicar comentario</button>
+        </div>
+        
+        <!-- Lista de comentarios -->
+        <div id="commentsList" class="comments-list">
+            <div class="no-comments">Cargando comentarios...</div>
+        </div>
     </div>
 
     <script>
@@ -192,6 +321,81 @@
         let currentPage = 1;
         let totalChapters = [];
 
+        // ==================== SISTEMA DE COMENTARIOS LOCAL ====================
+        
+        // Cargar comentarios desde localStorage
+        function loadComments(chapterId) {
+            const key = `comments_chapter_${chapterId}`;
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : [];
+        }
+        
+        // Guardar comentarios en localStorage
+        function saveComments(chapterId, comments) {
+            const key = `comments_chapter_${chapterId}`;
+            localStorage.setItem(key, JSON.stringify(comments));
+        }
+        
+        // Renderizar comentarios
+        function renderComments(chapterId) {
+            const comments = loadComments(chapterId);
+            const container = document.getElementById('commentsList');
+            
+            if (comments.length === 0) {
+                container.innerHTML = '<div class="no-comments">💭 Sé el primero en comentar</div>';
+                return;
+            }
+            
+            container.innerHTML = comments.map((comment, index) => `
+                <div class="comment-card" data-index="${index}">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(comment.author) || 'Anónimo'}</span>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span class="comment-date">${comment.date}</span>
+                            <button class="delete-comment" onclick="deleteComment(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="comment-text">${escapeHtml(comment.text)}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Agregar comentario
+        function addComment(chapterId, author, text) {
+            if (!text.trim()) {
+                showNotification('✏️ Escribe un comentario primero');
+                return false;
+            }
+            
+            const comments = loadComments(chapterId);
+            comments.unshift({
+                author: author.trim().substring(0, 30) || 'Anónimo',
+                text: text.trim().substring(0, 500),
+                date: new Date().toLocaleString('es-ES')
+            });
+            saveComments(chapterId, comments);
+            renderComments(chapterId);
+            return true;
+        }
+        
+        // Eliminar comentario
+        function deleteComment(index) {
+            const comments = loadComments(currentChapter.id);
+            comments.splice(index, 1);
+            saveComments(currentChapter.id, comments);
+            renderComments(currentChapter.id);
+            showNotification('🗑️ Comentario eliminado');
+        }
+        
+        // Escapar HTML para seguridad
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ==================== LECTOR DE MANGA ====================
+        
         function showNotification(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'custom-toast';
@@ -216,28 +420,6 @@
             }
         }
 
-        function loadDisqus(chapterId, chapterTitle) {
-            const disqus_config_custom = function() {
-                this.page.identifier = `chapter_${chapterId}`;
-                this.page.title = `Blue Lock - Capítulo ${chapterId}`;
-                this.page.url = window.location.href;
-            };
-
-            if (window.DISQUS) {
-                window.DISQUS.reset({
-                    reload: true,
-                    config: disqus_config_custom
-                });
-            } else {
-                window.disqus_config = disqus_config_custom;
-                const d = document, s = d.createElement('script');
-                s.src = 'https://bluelockapp.disqus.com/embed.js';
-                s.setAttribute('data-timestamp', +new Date());
-                (d.head || d.body).appendChild(s);
-                document.getElementById('commentsSection').style.display = 'block';
-            }
-        }
-
         async function loadChaptersList() {
             try {
                 const response = await fetch(`${BASE_URL}/api/chapters.json`);
@@ -245,34 +427,45 @@
                 totalChapters = data.chapters || [];
                 totalChapters.sort((a, b) => b.number - a.number);
                 return totalChapters;
-            } catch (e) { return []; }
+            } catch (e) { 
+                console.log('Error cargando capítulos');
+                return []; 
+            }
         }
 
         async function loadChapter(chapterNumber) {
             const container = document.getElementById('readerContent');
             try {
                 const chapters = await loadChaptersList();
-                const info = chapters.find(c => c.number === chapterNumber) || { id: chapterNumber, number: chapterNumber, pages: 50 };
+                const info = chapters.find(c => c.number === chapterNumber);
                 
-                currentChapter = info;
-                totalPages = info.pages;
+                if (info) {
+                    currentChapter = info;
+                    totalPages = info.pages;
+                } else {
+                    currentChapter = { id: chapterNumber, number: chapterNumber, title: `Capítulo ${chapterNumber}`, pages: 50 };
+                    totalPages = 50;
+                }
 
                 const imagesHtml = [];
                 for (let i = 1; i <= totalPages; i++) {
-                    imagesHtml.push(`<img src="${BASE_URL}/caps/${info.id}/${i}.jpg" loading="lazy" data-page="${i}" onerror="this.remove()">`);
+                    imagesHtml.push(`<img src="${BASE_URL}/caps/${currentChapter.id}/${i}.jpg" loading="lazy" data-page="${i}" onerror="this.remove()">`);
                 }
 
                 container.innerHTML = `<div class="cascada-container">${imagesHtml.join('')}</div>`;
                 
                 document.getElementById('loadingScreen').style.display = 'none';
                 updatePageIndicator();
-                loadDisqus(info.number, info.title);
                 
-                // Listener de scroll para el indicador de página y auto-ocultar UI
+                // Cargar comentarios del capítulo
+                renderComments(currentChapter.id);
+                
+                // Scroll listener
                 window.addEventListener('scroll', handleScroll);
                 
             } catch (error) {
                 document.getElementById('loadingText').innerText = "❌ Error al cargar";
+                console.error(error);
             }
         }
 
@@ -281,10 +474,11 @@
             let found = false;
             
             images.forEach((img) => {
+                if (found) return;
                 const rect = img.getBoundingClientRect();
                 if (rect.top < window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
                     const page = parseInt(img.getAttribute('data-page'));
-                    if (page !== currentPage) {
+                    if (page !== currentPage && !isNaN(page)) {
                         currentPage = page;
                         updatePageIndicator();
                     }
@@ -296,11 +490,14 @@
             const footer = document.getElementById('readerFooter');
             footer.classList.add('hidden');
             clearTimeout(window.scrollTimer);
-            window.scrollTimer = setTimeout(() => footer.classList.remove('hidden'), 1000);
+            window.scrollTimer = setTimeout(() => footer.classList.remove('hidden'), 1500);
         }
 
         function updatePageIndicator() {
-            document.getElementById('pageIndicator').innerText = `📄 ${currentPage} / ${totalPages}`;
+            const indicator = document.getElementById('pageIndicator');
+            if (indicator && totalPages > 0) {
+                indicator.innerText = `📄 ${currentPage} / ${totalPages}`;
+            }
         }
 
         async function navigateChapter(direction) {
@@ -311,22 +508,34 @@
                 notifyFlutter(targetChap.number, targetChap.title);
                 window.location.href = `lector.html?chapter=${targetChap.number}`;
             } else {
-                showNotification(direction === 'next' ? '¡Último capítulo!' : '¡Primer capítulo!');
+                showNotification(direction === 'next' ? '📖 ¡Es el último capítulo!' : '📖 ¡Es el primer capítulo!');
             }
         }
 
         // Toggle UI al tocar
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('button') && !e.target.closest('#disqus_thread')) {
+            if (!e.target.closest('button') && !e.target.closest('.comment-form')) {
                 document.getElementById('readerFooter').classList.toggle('hidden');
             }
         });
 
         async function init() {
-            const num = getChapterFromURL();
-            await loadChapter(num);
+            const chapterNum = getChapterFromURL();
+            await loadChaptersList();
+            await loadChapter(chapterNum);
+            
             document.getElementById('prevChapterBtn').onclick = () => navigateChapter('prev');
             document.getElementById('nextChapterBtn').onclick = () => navigateChapter('next');
+            
+            // Comentarios
+            document.getElementById('submitComment').onclick = () => {
+                const author = document.getElementById('commentAuthor').value;
+                const text = document.getElementById('commentText').value;
+                if (addComment(currentChapter.id, author, text)) {
+                    document.getElementById('commentText').value = '';
+                    showNotification('✅ Comentario publicado');
+                }
+            };
         }
 
         init();
