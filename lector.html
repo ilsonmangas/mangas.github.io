@@ -156,171 +156,160 @@
 </head>
 <body>
 
-    <div id="loadingScreen" class="loading">
-        <div class="spinner"></div>
-        <div id="loadingText">Entrando a la cancha...</div>
+<div id="loadingScreen" class="loading">
+    <div class="spinner"></div>
+    <div id="loadingText">Entrando a la cancha...</div>
+</div>
+
+<div class="reader-footer" id="readerFooter">
+    <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
+    <div class="chapter-nav-buttons">
+        <button id="prevChapterBtn">⏮ Ant.</button>
+        <button id="nextChapterBtn">Sig. ⏭</button>
     </div>
+</div>
 
-    <div class="reader-footer" id="readerFooter">
-        <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
-        <div class="chapter-nav-buttons">
-            <button id="prevChapterBtn">⏮ Anterior Cap.</button>
-            <button id="nextChapterBtn">Siguiente Cap. ⏭</button>
-        </div>
+<div id="readerContent"></div>
+
+<!-- 🔥 CAMBIO: GISCUS -->
+<div class="comments-section" id="commentsSection">
+    <div class="comments-title">
+        <span>💬</span>
+        <span>Comentarios</span>
     </div>
+    <div id="giscus-container"></div>
+</div>
 
-    <div id="readerContent"></div>
+<script>
+const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
+let currentChapter = null;
+let totalPages = 0;
+let currentPage = 1;
+let totalChapters = [];
 
-    <div class="comments-section" id="commentsSection" style="display: none;">
-        <div class="comments-title">
-            <span>💬</span>
-            <span>Análisis del Partido (Comentarios)</span>
-        </div>
-        <div id="giscus_container"></div>
-    </div>
+// 🔥 NUEVO
+function loadGiscus(chapterNumber) {
+    const container = document.getElementById("giscus-container");
+    container.innerHTML = "";
 
-    <script>
-        const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
-        let currentChapter = null;
-        let totalPages = 0;
-        let currentPage = 1;
-        let totalChapters = [];
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
 
-        function showNotification(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = 'custom-toast';
-            toast.textContent = message;
-            if (isError) toast.style.borderColor = '#ff3366';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+    script.setAttribute("data-repo", "ilsonmangas/mi-blog-comments");
+    script.setAttribute("data-repo-id", "R_kgDOSS9Lwg");
+    script.setAttribute("data-category", "General");
+    script.setAttribute("data-category-id", "DIC_kwDOSS9Lws4C8PPK");
+    script.setAttribute("data-mapping", "specific");
+    script.setAttribute("data-term", `capitulo-${chapterNumber}`);
+    script.setAttribute("data-theme", "dark");
+    script.setAttribute("data-lang", "es");
+    script.setAttribute("crossorigin", "anonymous");
+    script.async = true;
+
+    container.appendChild(script);
+}
+
+function showNotification(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.textContent = message;
+    if (isError) toast.style.borderColor = '#ff3366';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
+
+function getChapterFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const chapter = parseInt(params.get('chapter'));
+    return !isNaN(chapter) ? chapter : 345;
+}
+
+async function loadChaptersList() {
+    try {
+        const response = await fetch(`${BASE_URL}/api/chapters.json`);
+        const data = await response.json();
+        totalChapters = data.chapters || [];
+        totalChapters.sort((a, b) => b.number - a.number);
+        return totalChapters;
+    } catch (e) { return []; }
+}
+
+async function loadChapter(chapterNumber) {
+    const container = document.getElementById('readerContent');
+    try {
+        const chapters = await loadChaptersList();
+        const info = chapters.find(c => c.number === chapterNumber) || { id: chapterNumber, number: chapterNumber, pages: 50 };
+        
+        currentChapter = info;
+        totalPages = info.pages;
+
+        const imagesHtml = [];
+        for (let i = 1; i <= totalPages; i++) {
+            imagesHtml.push(`<img src="${BASE_URL}/caps/${info.id}/${i}.jpg" loading="lazy" data-page="${i}" onerror="this.remove()">`);
         }
 
-        function getChapterFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            const chapter = parseInt(params.get('chapter'));
-            return !isNaN(chapter) ? chapter : 345;
+        container.innerHTML = `<div class="cascada-container">${imagesHtml.join('')}</div>`;
+        
+        document.getElementById('loadingScreen').style.display = 'none';
+        updatePageIndicator();
+
+        // 🔥 CAMBIO
+        loadGiscus(info.number);
+
+        window.addEventListener('scroll', handleScroll);
+        
+    } catch (error) {
+        document.getElementById('loadingText').innerText = "❌ Error al cargar";
+    }
+}
+
+function handleScroll() {
+    const images = document.querySelectorAll('.cascada-container img');
+    
+    images.forEach((img) => {
+        const rect = img.getBoundingClientRect();
+        if (rect.top < window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
+            currentPage = parseInt(img.getAttribute('data-page'));
+            updatePageIndicator();
         }
+    });
 
-        function notifyFlutter(chapterNumber, chapterTitle) {
-            if (window.ChapterNotifier) {
-                window.ChapterNotifier.postMessage(JSON.stringify({
-                    chapter: chapterNumber,
-                    title: chapterTitle
-                }));
-            }
-        }
+    const footer = document.getElementById('readerFooter');
+    footer.classList.add('hidden');
+    clearTimeout(window.scrollTimer);
+    window.scrollTimer = setTimeout(() => footer.classList.remove('hidden'), 1000);
+}
 
-        function loadGiscus() {
-            const container = document.getElementById('giscus_container');
-            container.innerHTML = '';
+function updatePageIndicator() {
+    document.getElementById('pageIndicator').innerText = `📄 ${currentPage} / ${totalPages}`;
+}
 
-            const script = document.createElement('script');
-            script.src = 'https://giscus.app/client.js';
-            script.setAttribute('data-repo', 'ilsonmangas/mi-blog-comments');
-            script.setAttribute('data-repo-id', 'R_kgDOSS9Lwg');
-            script.setAttribute('data-category', 'General');
-            script.setAttribute('data-category-id', 'DIC_kwDOSS9Lws4C8PPK');
-            script.setAttribute('data-mapping', 'pathname');
-            script.setAttribute('data-strict', '0');
-            script.setAttribute('data-reactions-enabled', '1');
-            script.setAttribute('data-emit-metadata', '0');
-            script.setAttribute('data-input-position', 'bottom');
-            script.setAttribute('data-theme', 'preferred_color_scheme');
-            script.setAttribute('data-lang', 'es');
-            script.crossOrigin = 'anonymous';
-            script.async = true;
+async function navigateChapter(direction) {
+    const currentIndex = totalChapters.findIndex(c => c.number === currentChapter.number);
+    const targetChap = totalChapters[currentIndex + (direction === 'next' ? -1 : 1)];
 
-            container.appendChild(script);
-            document.getElementById('commentsSection').style.display = 'block';
-        }
+    if (targetChap) {
+        window.location.href = `lector.html?chapter=${targetChap.number}`;
+    } else {
+        showNotification(direction === 'next' ? '¡Último capítulo!' : '¡Primer capítulo!');
+    }
+}
 
-        async function loadChaptersList() {
-            try {
-                const response = await fetch(`${BASE_URL}/api/chapters.json`);
-                const data = await response.json();
-                totalChapters = data.chapters || [];
-                totalChapters.sort((a, b) => b.number - a.number);
-                return totalChapters;
-            } catch (e) { return []; }
-        }
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('button')) {
+        document.getElementById('readerFooter').classList.toggle('hidden');
+    }
+});
 
-        async function loadChapter(chapterNumber) {
-            const container = document.getElementById('readerContent');
-            try {
-                const chapters = await loadChaptersList();
-                const info = chapters.find(c => c.number === chapterNumber) || { id: chapterNumber, number: chapterNumber, pages: 50 };
-                
-                currentChapter = info;
-                totalPages = info.pages;
+async function init() {
+    const num = getChapterFromURL();
+    await loadChapter(num);
+    document.getElementById('prevChapterBtn').onclick = () => navigateChapter('prev');
+    document.getElementById('nextChapterBtn').onclick = () => navigateChapter('next');
+}
 
-                const imagesHtml = [];
-                for (let i = 1; i <= totalPages; i++) {
-                    imagesHtml.push(`<img src="${BASE_URL}/caps/${info.id}/${i}.jpg" loading="lazy" data-page="${i}" onerror="this.remove()">`);
-                }
+init();
+</script>
 
-                container.innerHTML = `<div class="cascada-container">${imagesHtml.join('')}</div>`;
-                
-                document.getElementById('loadingScreen').style.display = 'none';
-                updatePageIndicator();
-                loadGiscus();
-                
-                window.addEventListener('scroll', handleScroll);
-                
-            } catch (error) {
-                document.getElementById('loadingText').innerText = "❌ Error al cargar";
-            }
-        }
-
-        function handleScroll() {
-            const images = document.querySelectorAll('.cascada-container img');
-            
-            images.forEach((img) => {
-                const rect = img.getBoundingClientRect();
-                if (rect.top < window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
-                    const page = parseInt(img.getAttribute('data-page'));
-                    if (page !== currentPage) {
-                        currentPage = page;
-                        updatePageIndicator();
-                    }
-                }
-            });
-
-            const footer = document.getElementById('readerFooter');
-            footer.classList.add('hidden');
-            clearTimeout(window.scrollTimer);
-            window.scrollTimer = setTimeout(() => footer.classList.remove('hidden'), 1000);
-        }
-
-        function updatePageIndicator() {
-            document.getElementById('pageIndicator').innerText = `📄 ${currentPage} / ${totalPages}`;
-        }
-
-        async function navigateChapter(direction) {
-            const currentIndex = totalChapters.findIndex(c => c.number === currentChapter.number);
-            const targetChap = totalChapters[currentIndex + (direction === 'next' ? -1 : 1)];
-
-            if (targetChap) {
-                notifyFlutter(targetChap.number, targetChap.title);
-                window.location.href = `lector.html?chapter=${targetChap.number}`;
-            } else {
-                showNotification(direction === 'next' ? '¡Último capítulo!' : '¡Primer capítulo!');
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('button') && !e.target.closest('#giscus_container')) {
-                document.getElementById('readerFooter').classList.toggle('hidden');
-            }
-        });
-
-        async function init() {
-            const num = getChapterFromURL();
-            await loadChapter(num);
-            document.getElementById('prevChapterBtn').onclick = () => navigateChapter('prev');
-            document.getElementById('nextChapterBtn').onclick = () => navigateChapter('next');
-        }
-
-        init();
-    </script>
 </body>
 </html>
