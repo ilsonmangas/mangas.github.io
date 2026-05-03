@@ -1,0 +1,25 @@
+{
+  "novels": [
+    {
+      "id": 1,
+      "title": "El sueño de Isagi",
+      "description": "Historia del pasado de Isagi Yoichi antes de llegar a Blue Lock.",
+      "coverUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Novela+1",
+      "pages": 120
+    },
+    {
+      "id": 2,
+      "title": "El camino de Rin",
+      "description": "La historia de Rin Itoshi y su relación con su hermano Sae.",
+      "coverUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Novela+2",
+      "pages": 115
+    },
+    {
+      "id": 3,
+      "title": "La determinación de Bachira",
+      "description": "El viaje de Bachira Meguru hacia el fútbol.",
+      "coverUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Novela+3",
+      "pages": 108
+    }
+  ]
+}
