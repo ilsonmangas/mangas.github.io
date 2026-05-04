@@ -5,21 +5,16 @@
       "number": 1,
       "title": "El despertar",
       "pages": 45,
-      "volume": 1
+      "volume": 1,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/episode_nagi/covers/chapter_1.jpg"
     },
     {
       "id": 2,
       "number": 2,
       "title": "El equipo",
       "pages": 48,
-      "volume": 1
-    },
-    {
-      "id": 3,
-      "number": 3,
-      "title": "El prodigio",
-      "pages": 52,
-      "volume": 1
+      "volume": 1,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/episode_nagi/covers/chapter_2.jpg"
     }
   ]
 }
