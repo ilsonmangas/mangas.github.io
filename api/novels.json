@@ -2,21 +2,30 @@
   "novels": [
     {
       "id": 1,
-      "title": "Isagi Yoichi",
-      "description": "Historia del pasado de Isagi Yoichi antes de llegar a Blue Lock.",
-      "pages": 8
+      "title": "El sueño de Isagi",
+      "description": "Historia del pasado de Isagi Yoichi. Descubre cómo nació su sueño de ser el mejor delantero del mundo.",
+      "author": "Muneyuki Kaneshiro",
+      "chapters": 8,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/novels/covers/isagi.jpg",
+      "character": "Isagi Yoichi"
     },
     {
       "id": 2,
-      "title": "Nagi Seishiro",
-      "description": "Historia del pasado de Nagi Seishiro antes de llegar a Blue Lock.",
-      "pages": 10
+      "title": "El orgullo de Nagi",
+      "description": "La perspectiva de Seishiro Nagi antes de conocer a Reo y su llegada a Blue Lock.",
+      "author": "Muneyuki Kaneshiro",
+      "chapters": 10,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/novels/covers/nagi.jpg",
+      "character": "Seishiro Nagi"
     },
-        {
+    {
       "id": 3,
-      "title": "Meguru Bachira",
-      "description": "Historia del pasado de Meguru Bachira antes de llegar a Blue Lock.",
-      "pages": 10
+      "title": "La determinación de Bachira",
+      "description": "El viaje de Meguru Bachira hacia el fútbol y cómo encontró su estilo único antes de Blue Lock.",
+      "author": "Muneyuki Kaneshiro",
+      "chapters": 10,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/novels/covers/bachira.jpg",
+      "character": "Meguru Bachira"
     }
   ]
 }
