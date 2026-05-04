@@ -16,9 +16,9 @@
             background: black;
             overflow-x: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: white;
         }
 
+        /* Notificación personalizada */
         .custom-toast {
             position: fixed;
             top: 50%;
@@ -45,12 +45,13 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
         }
 
+        /* Barra inferior */
         .reader-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             padding: 12px 16px;
             z-index: 1000;
             backdrop-filter: blur(10px);
@@ -58,7 +59,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(0,212,255,0.2);
+            border-top: 1px solid rgba(0,212,255,0.3);
         }
 
         .reader-footer.hidden {
@@ -66,7 +67,7 @@
         }
 
         .page-indicator {
-            background: rgba(0,212,255,0.1);
+            background: rgba(0,212,255,0.15);
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -91,16 +92,17 @@
         }
 
         .chapter-nav-buttons button:active {
-            transform: scale(0.9);
+            transform: scale(0.95);
             background: #00d4ff;
             color: black;
         }
 
+        /* Contenedor de imágenes */
         .cascada-container {
             display: flex;
             flex-direction: column;
             width: 100%;
-            padding: 0; 
+            padding: 0;
             margin: 0;
         }
 
@@ -113,31 +115,14 @@
             background: black;
         }
 
-        .comments-section {
-            padding: 30px 16px 120px 16px;
-            background: #05050a;
-            border-top: 2px solid #00d4ff;
-            margin-top: -1px;
-        }
-
-        .comments-title {
-            color: #00d4ff;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        /* Loading */
         .loading {
             position: fixed;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: black;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00d4ff;
+            text-align: center;
             z-index: 2000;
         }
 
@@ -151,165 +136,351 @@
             margin-bottom: 15px;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
-<div id="loadingScreen" class="loading">
-    <div class="spinner"></div>
-    <div id="loadingText">Entrando a la cancha...</div>
-</div>
-
-<div class="reader-footer" id="readerFooter">
-    <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
-    <div class="chapter-nav-buttons">
-        <button id="prevChapterBtn">⏮ Anterior Cap.</button>
-        <button id="nextChapterBtn">Siguiente Cap. ⏭</button>
+    <div class="reader-footer" id="readerFooter">
+        <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
+        <div class="chapter-nav-buttons">
+            <button id="prevChapterBtn">⏮ Capítulo anterior</button>
+            <button id="nextChapterBtn">Capítulo siguiente ⏭</button>
+        </div>
     </div>
-</div>
 
-<div id="readerContent"></div>
+    <div id="readerContent"></div>
 
-<!-- 🔥 CAMBIO: GISCUS -->
-<div class="comments-section" id="commentsSection">
-    <div class="comments-title">
-        <span>💬</span>
-        <span>Análisis del Partido (Comentarios)</span>
-    </div>
-    <div id="giscus-container"></div>
-</div>
+    <script>
+        const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
+        let currentChapter = null;
+        let totalPages = 0;
+        let currentPage = 1;
+        let totalChapters = [];
+        let currentType = 'manga';      // 'manga' o 'spinoff'
+        let currentBaseUrl = 'caps';     // 'caps' o 'spinoffs/episode_nagi'
 
-<script>
-const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
-let currentChapter = null;
-let totalPages = 0;
-let currentPage = 1;
-let totalChapters = [];
-
-// 🔥 NUEVO
-function loadGiscus(chapterNumber) {
-    const container = document.getElementById("giscus-container");
-    container.innerHTML = "";
-
-    const script = document.createElement("script");
-    script.src = "https://giscus.app/client.js";
-
-    script.setAttribute("data-repo", "ilsonmangas/mi-blog-comments");
-    script.setAttribute("data-repo-id", "R_kgDOSS9Lwg");
-    script.setAttribute("data-category", "General");
-    script.setAttribute("data-category-id", "DIC_kwDOSS9Lws4C8PPK");
-    script.setAttribute("data-mapping", "specific");
-    script.setAttribute("data-term", `capitulo-${chapterNumber}`);
-    script.setAttribute("data-theme", "dark");
-    script.setAttribute("data-lang", "es");
-    script.setAttribute("crossorigin", "anonymous");
-    script.async = true;
-
-    container.appendChild(script);
-}
-
-function showNotification(message, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'custom-toast';
-    toast.textContent = message;
-    if (isError) toast.style.borderColor = '#ff3366';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-}
-
-function getChapterFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const chapter = parseInt(params.get('chapter'));
-    return !isNaN(chapter) ? chapter : 345;
-}
-
-async function loadChaptersList() {
-    try {
-        const response = await fetch(`${BASE_URL}/api/chapters.json`);
-        const data = await response.json();
-        totalChapters = data.chapters || [];
-        totalChapters.sort((a, b) => b.number - a.number);
-        return totalChapters;
-    } catch (e) { return []; }
-}
-
-async function loadChapter(chapterNumber) {
-    const container = document.getElementById('readerContent');
-    try {
-        const chapters = await loadChaptersList();
-        const info = chapters.find(c => c.number === chapterNumber) || { id: chapterNumber, number: chapterNumber, pages: 50 };
-        
-        currentChapter = info;
-        totalPages = info.pages;
-
-        const imagesHtml = [];
-        for (let i = 1; i <= totalPages; i++) {
-            imagesHtml.push(`<img src="${BASE_URL}/caps/${info.id}/${i}.jpg" loading="lazy" data-page="${i}" onerror="this.remove()">`);
+        // Mostrar notificación personalizada
+        function showNotification(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast';
+            toast.textContent = message;
+            if (isError) toast.style.borderColor = '#ff3366';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
         }
 
-        container.innerHTML = `<div class="cascada-container">${imagesHtml.join('')}</div>`;
+        // Obtener parámetros de URL
+        function getParamsFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const chapter = parseInt(params.get('chapter'));
+            const type = params.get('type') || 'manga';
+            const baseUrl = params.get('baseUrl') || 'caps';
+            return {
+                chapter: !isNaN(chapter) ? chapter : 345,
+                type: type,
+                baseUrl: baseUrl
+            };
+        }
+
+        // Enviar mensaje a Flutter cuando cambia de capítulo
+        function notifyFlutter(chapterNumber, chapterTitle) {
+            if (window.ChapterNotifier) {
+                window.ChapterNotifier.postMessage(JSON.stringify({
+                    chapter: chapterNumber,
+                    title: chapterTitle
+                }));
+            }
+        }
+
+        // Cargar lista de capítulos desde la API correspondiente
+        async function loadChaptersList() {
+            try {
+                let apiUrl = '';
+                if (currentType === 'spinoff') {
+                    apiUrl = `${BASE_URL}/api/episode_nagi.json`;
+                } else {
+                    apiUrl = `${BASE_URL}/api/chapters.json`;
+                }
+                
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (currentType === 'spinoff') {
+                    totalChapters = data.chapters || [];
+                } else {
+                    totalChapters = data.chapters || [];
+                }
+                
+                totalChapters.sort((a, b) => b.number - a.number);
+                return totalChapters;
+            } catch (error) {
+                console.error('Error cargando capítulos:', error);
+                return [];
+            }
+        }
+
+        // Cargar las imágenes del capítulo actual
+        async function loadChapter(chapterNumber, type, baseUrl) {
+            const loadingDiv = document.getElementById('readerContent');
+            loadingDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Cargando Capítulo ${chapterNumber}...</div>
+                </div>
+            `;
+
+            try {
+                const chapters = await loadChaptersList();
+                const chapterInfo = chapters.find(c => c.number === chapterNumber);
+                
+                if (chapterInfo) {
+                    currentChapter = chapterInfo;
+                    totalPages = currentChapter.pages;
+                } else {
+                    totalPages = 50;
+                    currentChapter = { 
+                        id: chapterNumber, 
+                        number: chapterNumber, 
+                        title: `Capítulo ${chapterNumber}`, 
+                        pages: 50,
+                        volume: 1
+                    };
+                }
+
+                const imageUrls = [];
+                for (let i = 1; i <= totalPages; i++) {
+                    let url;
+                    if (type === 'spinoff') {
+                        url = `${BASE_URL}/${baseUrl}/${chapterNumber}/${i}.jpg`;
+                    } else {
+                        url = `${BASE_URL}/caps/${chapterNumber}/${i}.jpg`;
+                    }
+                    imageUrls.push(url);
+                }
+
+                renderReader(imageUrls);
+                loadLastPageAndPosition();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.innerHTML = `
+                    <div class="loading">
+                        <div>❌ Error al cargar el capítulo</div>
+                        <button onclick="location.reload()" style="margin-top:16px;padding:8px 16px;background:#00d4ff;border:none;border-radius:8px;color:black;">Reintentar</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Renderizar el lector (modo cascada)
+        function renderReader(imageUrls) {
+            const container = document.getElementById('readerContent');
+            
+            container.innerHTML = `
+                <div class="cascada-container" id="cascadaContainer">
+                    ${imageUrls.map((url, idx) => `
+                        <img src="${url}" 
+                             loading="lazy"
+                             onerror="this.style.display='none'"
+                             alt="Página ${idx + 1}"
+                             data-page="${idx + 1}">
+                    `).join('')}
+                </div>
+            `;
+            
+            const cascadaContainer = document.getElementById('cascadaContainer');
+            if (cascadaContainer) {
+                cascadaContainer.addEventListener('scroll', () => {
+                    updateCurrentPageFromScroll();
+                    toggleUIOnScroll();
+                });
+            }
+            
+            const loadingDiv = document.querySelector('.loading');
+            if (loadingDiv) loadingDiv.remove();
+        }
+
+        function loadLastPageAndPosition() {
+            const savedPage = localStorage.getItem(`lastPage_${currentChapter.id}_${currentType}`);
+            if (savedPage) {
+                currentPage = parseInt(savedPage);
+                currentPage = Math.min(currentPage, totalPages);
+                updatePageIndicator();
+                
+                setTimeout(() => {
+                    const container = document.getElementById('cascadaContainer');
+                    if (container) {
+                        let accumulatedHeight = 0;
+                        const images = container.querySelectorAll('img');
+                        for (let i = 0; i < currentPage - 1 && i < images.length; i++) {
+                            accumulatedHeight += images[i].clientHeight;
+                        }
+                        container.scrollTop = accumulatedHeight;
+                    }
+                }, 300);
+            } else {
+                updatePageIndicator();
+            }
+        }
+
+        function updateCurrentPageFromScroll() {
+            const container = document.getElementById('cascadaContainer');
+            if (!container) return;
+            
+            const scrollTop = container.scrollTop;
+            const windowHeight = window.innerHeight;
+            let accumulatedHeight = 0;
+            let visiblePage = 1;
+            
+            const images = container.querySelectorAll('img');
+            for (let i = 0; i < images.length; i++) {
+                const imgHeight = images[i].clientHeight;
+                const imageTop = accumulatedHeight;
+                const imageBottom = imageTop + imgHeight;
+                
+                const viewportCenter = scrollTop + windowHeight / 2;
+                
+                if (viewportCenter >= imageTop && viewportCenter <= imageBottom) {
+                    visiblePage = i + 1;
+                    break;
+                }
+                accumulatedHeight += imgHeight;
+            }
+            
+            if (visiblePage !== currentPage) {
+                currentPage = visiblePage;
+                updatePageIndicator();
+                saveLastPage();
+            }
+        }
+
+        let scrollTimeout;
+        function toggleUIOnScroll() {
+            const footer = document.getElementById('readerFooter');
+            footer.classList.add('hidden');
+            
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                footer.classList.remove('hidden');
+            }, 2000);
+        }
+
+        let uiManualHidden = false;
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            uiManualHidden = !uiManualHidden;
+            const footer = document.getElementById('readerFooter');
+            footer.classList.toggle('hidden', uiManualHidden);
+        });
+
+        function updatePageIndicator() {
+            const indicator = document.getElementById('pageIndicator');
+            if (indicator) {
+                indicator.innerText = `📄 ${currentPage} / ${totalPages}`;
+            }
+        }
+
+        function saveLastPage() {
+            if (currentChapter) {
+                localStorage.setItem(`lastPage_${currentChapter.id}_${currentType}`, currentPage);
+                localStorage.setItem('lastChapterId', currentChapter.id);
+                localStorage.setItem('lastType', currentType);
+            }
+        }
+
+        // Navegación con gestos de swipe
+        let touchStartX = 0;
+        let touchStartY = 0;
         
-        document.getElementById('loadingScreen').style.display = 'none';
-        updatePageIndicator();
-
-        // 🔥 CAMBIO
-        loadGiscus(info.number);
-
-        window.addEventListener('scroll', handleScroll);
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
         
-    } catch (error) {
-        document.getElementById('loadingText').innerText = "❌ Error al cargar";
-    }
-}
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                if (deltaX > 0) {
+                    prevPage();
+                } else {
+                    nextPage();
+                }
+            }
+        });
 
-function handleScroll() {
-    const images = document.querySelectorAll('.cascada-container img');
-    
-    images.forEach((img) => {
-        const rect = img.getBoundingClientRect();
-        if (rect.top < window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
-            currentPage = parseInt(img.getAttribute('data-page'));
+        // Navegación de páginas
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                goToPage(currentPage);
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                goToPage(currentPage);
+            }
+        }
+
+        function goToPage(page) {
+            const container = document.getElementById('cascadaContainer');
+            if (container) {
+                let accumulatedHeight = 0;
+                const images = container.querySelectorAll('img');
+                for (let i = 0; i < page - 1 && i < images.length; i++) {
+                    accumulatedHeight += images[i].clientHeight;
+                }
+                container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
+            }
+            currentPage = page;
             updatePageIndicator();
+            saveLastPage();
         }
-    });
 
-    const footer = document.getElementById('readerFooter');
-    footer.classList.add('hidden');
-    clearTimeout(window.scrollTimer);
-    window.scrollTimer = setTimeout(() => footer.classList.remove('hidden'), 1000);
-}
+        // Navegación de capítulos
+        async function nextChapter() {
+            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+            if (currentIndex > 0) {
+                const nextChap = totalChapters[currentIndex - 1];
+                notifyFlutter(nextChap.number, nextChap.title);
+                window.location.href = `lector.html?chapter=${nextChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+            } else {
+                showNotification('📖 ¡Es el último capítulo!');
+            }
+        }
 
-function updatePageIndicator() {
-    document.getElementById('pageIndicator').innerText = `📄 ${currentPage} / ${totalPages}`;
-}
+        async function prevChapter() {
+            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+            if (currentIndex < totalChapters.length - 1) {
+                const prevChap = totalChapters[currentIndex + 1];
+                notifyFlutter(prevChap.number, prevChap.title);
+                window.location.href = `lector.html?chapter=${prevChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+            } else {
+                showNotification('📖 ¡Es el primer capítulo!');
+            }
+        }
 
-async function navigateChapter(direction) {
-    const currentIndex = totalChapters.findIndex(c => c.number === currentChapter.number);
-    const targetChap = totalChapters[currentIndex + (direction === 'next' ? -1 : 1)];
+        async function init() {
+            const params = getParamsFromURL();
+            currentType = params.type;
+            currentBaseUrl = params.baseUrl;
+            
+            await loadChaptersList();
+            await loadChapter(params.chapter, currentType, currentBaseUrl);
+            
+            document.getElementById('prevChapterBtn').onclick = prevChapter;
+            document.getElementById('nextChapterBtn').onclick = nextChapter;
+        }
 
-    if (targetChap) {
-        window.location.href = `lector.html?chapter=${targetChap.number}`;
-    } else {
-        showNotification(direction === 'next' ? '¡Último capítulo!' : '¡Primer capítulo!');
-    }
-}
-
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('button')) {
-        document.getElementById('readerFooter').classList.toggle('hidden');
-    }
-});
-
-async function init() {
-    const num = getChapterFromURL();
-    await loadChapter(num);
-    document.getElementById('prevChapterBtn').onclick = () => navigateChapter('prev');
-    document.getElementById('nextChapterBtn').onclick = () => navigateChapter('next');
-}
-
-init();
-</script>
-
+        init();
+    </script>
 </body>
 </html>
