@@ -2,15 +2,15 @@
   "novels": [
     {
       "id": 1,
-      "title": "El sueño de Isagi",
+      "title": "Isagi Yoichi",
       "description": "Historia del pasado de Isagi Yoichi antes de llegar a Blue Lock.",
-      "pages": 120
+      "pages": 8
     },
     {
       "id": 2,
-      "title": "El camino de Rin",
-      "description": "La historia de Rin Itoshi y su relación con su hermano Sae.",
-      "pages": 115
+      "title": "Nagi Seishiro",
+      "description": "Historia del pasado de Nagi Seishiro antes de llegar a Blue Lock.",
+      "pages": 10
     }
   ]
 }
