@@ -1,44 +1,31 @@
 {
-  "chapters": [
+  "novels": [
     {
       "id": 1,
-      "number": 1,
-      "title": "Un genio",
-      "pages": 63,
-      "volume": 1,
-      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/caps/345/1.jpg"
+      "title": "El sueño de Isagi",
+      "description": "Historia del pasado de Isagi Yoichi. Descubre cómo nació su sueño de ser el mejor delantero del mundo.",
+      "author": "Muneyuki Kaneshiro",
+      "chapters": 8,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/covers/novel_1.jpeg",
+      "character": "Isagi Yoichi"
     },
     {
       "id": 2,
-      "number": 2,
-      "title": "Promesa",
-      "pages": 58,
-      "volume": 1,
-      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/caps/345/1.jpg"
+      "title": "El orgullo de Nagi",
+      "description": "La perspectiva de Seishiro Nagi antes de conocer a Reo y su llegada a Blue Lock.",
+      "author": "Muneyuki Kaneshiro",
+      "chapters": 10,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/covers/novel_1.jpeg",
+      "character": "Seishiro Nagi"
     },
     {
       "id": 3,
-      "number": 3,
-      "title": "Idiota",
-      "pages": 39,
-      "volume": 1,
-      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/caps/345/1.jpg"
-    },
-    {
-      "id": 4,
-      "number": 4,
-      "title": "El juego",
-      "pages": 36,
-      "volume": 1,
-      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/caps/345/1.jpg"
-    },
-    {
-      "id": 5,
-      "number": 5,
-      "title": "Vs. Equipo Y",
-      "pages": 49,
-      "volume": 1,
-      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/caps/345/1.jpg"
+      "title": "La determinación de Bachira",
+      "description": "El viaje de Meguru Bachira hacia el fútbol y cómo encontró su estilo único antes de Blue Lock.",
+      "author": "Muneyuki Kaneshiro",
+      "chapters": 10,
+      "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/covers/novel_1.jpeg",
+      "character": "Meguru Bachira"
     }
   ]
 }
