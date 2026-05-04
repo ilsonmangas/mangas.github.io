@@ -3,40 +3,40 @@
     {
       "id": 1,
       "number": 1,
-      "title": "El despertar",
-      "pages": 45,
+      "title": "Un genio",
+      "pages": 63,
       "volume": 1,
       "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/episode_nagi/covers/chapter_1.jpg"
     },
     {
       "id": 2,
       "number": 2,
-      "title": "El equipo",
-      "pages": 48,
+      "title": "Promesa",
+      "pages": 58,
       "volume": 1,
       "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/episode_nagi/covers/chapter_2.jpg"
     },
         {
       "id": 3,
       "number": 3,
-      "title": "El equipo",
-      "pages": 48,
+      "title": "Idiota",
+      "pages": 39,
       "volume": 1,
       "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/episode_nagi/covers/chapter_2.jpg"
     },
         {
       "id": 4,
       "number": 4,
-      "title": "El equipo",
-      "pages": 48,
+      "title": "El juego",
+      "pages": 36,
       "volume": 1,
       "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/episode_nagi/covers/chapter_2.jpg"
     },
         {
       "id": 5,
       "number": 5,
-      "title": "El equipo",
-      "pages": 48,
+      "title": "Vs. Equipo Y",
+      "pages": 49,
       "volume": 1,
       "coverUrl": "https://ilsonmangas.github.io/mangas.github.io/spinoffs/episode_nagi/covers/chapter_2.jpg"
     }
