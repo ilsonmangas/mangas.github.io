@@ -2,28 +2,28 @@
   "ads": [
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/NUEVO%20CAP.jpg",
-      "title": "Nuevo Capítulo",
+      "title": "¡Último capítulo publicado!",
       "action": "latest_chapter"
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/ANIME.jpg",
-      "title": "TV Anime",
+      "title": "¡Ve el anime en la sección de TV!",
       "action": "tv_anime"
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/EPISODE%20NAGI%20MANGA.jpg",
-      "title": "Episode Nagi",
+      "title": "¡Episodio Nagi y novelas en Spin Off!",
       "action": "spin_off"
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/LIVE%20ACTION.jpg",
-      "title": "Trailer Oficial",
+      "title": "¡Ve el trailer del live action!",
       "action": "trailer",
       "link": "https://www.youtube.com/watch?v=fdnDcXGNNQc"
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/APP.jpg",
-      "title": "Descargar App",
+      "title": "Comparte la appp",
       "action": "github",
       "link": "https://github.com/IlsonApps/Blue-Lock-App"
     }
