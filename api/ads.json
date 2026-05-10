@@ -1,34 +1,31 @@
 {
   "ads": [
     {
-      "imageUrl": "https://via.placeholder.com/400x200/00d4ff/ffffff?text=Blue+Lock",
-      "title": "Blue Lock Oficial",
-      "link": "https://bluelock.com",
-      "action": "url"
-    },
-    {
-      "imageUrl": "https://via.placeholder.com/400x200/ff6600/ffffff?text=Nuevo+Capítulo",
+      "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/NUEVO%20CAP.jpg",
       "title": "Nuevo Capítulo",
-      "link": "",
       "action": "latest_chapter"
     },
     {
-      "imageUrl": "https://via.placeholder.com/400x200/9900ff/ffffff?text=Episode+Nagi",
+      "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/ANIME.jpg",
+      "title": "TV Anime",
+      "action": "tv_anime"
+    },
+    {
+      "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/EPISODE%20NAGI%20MANGA.jpg",
       "title": "Episode Nagi",
-      "link": "",
       "action": "spin_off"
     },
     {
-      "imageUrl": "https://via.placeholder.com/400x200/00ff88/ffffff?text=Merchandising",
-      "title": "Merchandising",
-      "link": "https://example.com",
-      "action": "url"
+      "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/LIVE%20ACTION.jpg",
+      "title": "Trailer Oficial",
+      "action": "trailer",
+      "link": "https://www.youtube.com/watch?v=fdnDcXGNNQc"
     },
     {
-      "imageUrl": "https://via.placeholder.com/400x200/ff3366/ffffff?text=Eventos",
-      "title": "Eventos Blue Lock",
-      "link": "",
-      "action": "none"
+      "imageUrl": "https://via.placeholder.com/400x200/00ff88/ffffff?text=Descargar+App",
+      "title": "Descargar App",
+      "action": "github",
+      "link": "https://github.com/IlsonApps/Blue-Lock-App"
     }
   ]
 }
