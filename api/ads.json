@@ -12,18 +12,18 @@
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/EPISODE%20NAGI%20MANGA.jpg",
-      "title": "¡Episodio Nagi y novelas en Spin Off!",
+      "title": "¡Episodio Nagi y novelas en la sección de Spin Off!",
       "action": "spin_off"
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/LIVE%20ACTION.jpg",
-      "title": "¡Ve el trailer del live action!",
+      "title": "¡Trailer del live action!",
       "action": "trailer",
       "link": "https://www.youtube.com/watch?v=fdnDcXGNNQc"
     },
     {
       "imageUrl": "https://raw.githubusercontent.com/ilsonmangas/mi-blog-comments/refs/heads/main/APP.jpg",
-      "title": "Comparte la appp",
+      "title": "¡Comparte la app!",
       "action": "github",
       "link": "https://github.com/IlsonApps/Blue-Lock-App"
     }
