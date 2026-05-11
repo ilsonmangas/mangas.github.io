@@ -160,7 +160,9 @@
         let currentType = 'manga';
         let currentBaseUrl = 'caps';
         let scrollTimeout;
-        let isScrolling = false;
+        
+        // Array para almacenar alturas de las imágenes
+        let imageHeights = [];
 
         function showNotification(message, isError = false) {
             const toast = document.createElement('div');
@@ -245,7 +247,6 @@
                 }
 
                 renderReader(imageUrls);
-                loadLastPageAndPosition();
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -268,25 +269,52 @@
                              loading="lazy"
                              onerror="this.style.display='none'"
                              alt="Página ${idx + 1}"
-                             data-page="${idx + 1}">
+                             data-page="${idx + 1}"
+                             class="manga-page">
                     `).join('')}
                 </div>
             `;
             
-            const cascadaContainer = document.getElementById('cascadaContainer');
-            if (cascadaContainer) {
-                cascadaContainer.addEventListener('scroll', () => {
-                    if (!isScrolling) {
-                        requestAnimationFrame(() => {
+            // Esperar a que las imágenes se carguen para calcular alturas
+            const images = document.querySelectorAll('.manga-page');
+            let loadedCount = 0;
+            
+            function checkAllLoaded() {
+                loadedCount++;
+                if (loadedCount === images.length) {
+                    // Todas las imágenes están cargadas, calcular alturas
+                    calculateImageHeights();
+                    loadLastPageAndPosition();
+                    // Agregar evento de scroll después de que todo está cargado
+                    const cascadaContainer = document.getElementById('cascadaContainer');
+                    if (cascadaContainer) {
+                        cascadaContainer.addEventListener('scroll', () => {
                             updateCurrentPageFromScroll();
+                            toggleUIOnScroll();
                         });
                     }
-                    toggleUIOnScroll();
-                });
+                }
             }
+            
+            images.forEach(img => {
+                if (img.complete) {
+                    checkAllLoaded();
+                } else {
+                    img.addEventListener('load', checkAllLoaded);
+                    img.addEventListener('error', checkAllLoaded);
+                }
+            });
             
             const loadingDiv = document.querySelector('.loading');
             if (loadingDiv) loadingDiv.remove();
+        }
+        
+        function calculateImageHeights() {
+            const images = document.querySelectorAll('.manga-page');
+            imageHeights = [];
+            images.forEach(img => {
+                imageHeights.push(img.clientHeight);
+            });
         }
 
         function loadLastPageAndPosition() {
@@ -298,17 +326,14 @@
                 
                 setTimeout(() => {
                     const container = document.getElementById('cascadaContainer');
-                    if (container) {
+                    if (container && imageHeights.length > 0) {
                         let accumulatedHeight = 0;
-                        const images = container.querySelectorAll('img');
-                        for (let i = 0; i < currentPage - 1 && i < images.length; i++) {
-                            if (images[i]) {
-                                accumulatedHeight += images[i].clientHeight;
-                            }
+                        for (let i = 0; i < currentPage - 1 && i < imageHeights.length; i++) {
+                            accumulatedHeight += imageHeights[i];
                         }
                         container.scrollTop = accumulatedHeight;
                     }
-                }, 300);
+                }, 100);
             } else {
                 updatePageIndicator();
             }
@@ -316,24 +341,18 @@
 
         function updateCurrentPageFromScroll() {
             const container = document.getElementById('cascadaContainer');
-            if (!container) return;
-            
-            isScrolling = true;
+            if (!container || imageHeights.length === 0) return;
             
             const scrollTop = container.scrollTop;
             const windowHeight = window.innerHeight;
             let accumulatedHeight = 0;
             let newPage = 1;
             
-            const images = container.querySelectorAll('img');
-            
-            for (let i = 0; i < images.length; i++) {
-                const img = images[i];
-                const imgHeight = img.clientHeight;
+            for (let i = 0; i < imageHeights.length; i++) {
+                const imgHeight = imageHeights[i];
                 const imageTop = accumulatedHeight;
                 const imageBottom = imageTop + imgHeight;
                 
-                // El centro de la ventana de visualización
                 const viewportCenter = scrollTop + (windowHeight / 2);
                 
                 if (viewportCenter >= imageTop && viewportCenter <= imageBottom) {
@@ -348,10 +367,6 @@
                 updatePageIndicator();
                 saveLastPage();
             }
-            
-            setTimeout(() => {
-                isScrolling = false;
-            }, 100);
         }
 
         function toggleUIOnScroll() {
@@ -426,13 +441,10 @@
 
         function goToPage(page) {
             const container = document.getElementById('cascadaContainer');
-            if (container && page >= 1 && page <= totalPages) {
+            if (container && imageHeights.length > 0 && page >= 1 && page <= totalPages) {
                 let accumulatedHeight = 0;
-                const images = container.querySelectorAll('img');
-                for (let i = 0; i < page - 1 && i < images.length; i++) {
-                    if (images[i]) {
-                        accumulatedHeight += images[i].clientHeight;
-                    }
+                for (let i = 0; i < page - 1 && i < imageHeights.length; i++) {
+                    accumulatedHeight += imageHeights[i];
                 }
                 container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
                 currentPage = page;
