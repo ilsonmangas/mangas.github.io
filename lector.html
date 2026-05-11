@@ -24,7 +24,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             backdrop-filter: blur(10px);
             color: white;
             padding: 12px 24px;
@@ -45,21 +45,21 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
         }
 
-        /* Barra inferior */
+        /* Barra inferior mejorada */
         .reader-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: rgba(0,0,0,0.95);
-            padding: 12px 16px;
+            padding: 12px 20px;
             z-index: 1000;
             backdrop-filter: blur(10px);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(0,212,255,0.3);
+            border-top: 1px solid rgba(0,212,255,0.4);
         }
 
         .reader-footer.hidden {
@@ -67,34 +67,52 @@
         }
 
         .page-indicator {
-            background: rgba(0,212,255,0.15);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            border: 1px solid rgba(0,212,255,0.3);
+            background: rgba(0,212,255,0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid rgba(0,212,255,0.5);
+            color: #00d4ff;
         }
 
         .chapter-nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .chapter-nav-buttons button {
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
-            padding: 8px 14px;
-            border-radius: 12px;
+            padding: 10px 18px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .chapter-nav-buttons button:hover {
+            background: rgba(255,255,255,0.2);
         }
 
         .chapter-nav-buttons button:active {
             transform: scale(0.95);
             background: #00d4ff;
             color: black;
+        }
+
+        /* Botón anterior */
+        #prevChapterBtn {
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+
+        /* Botón siguiente */
+        #nextChapterBtn {
+            background: linear-gradient(135deg, #00d4ff, #090979);
+            border: none;
         }
 
         /* Contenedor de imágenes */
@@ -139,6 +157,20 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Mejora del scroll */
+        .cascada-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .cascada-container::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        .cascada-container::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -159,10 +191,12 @@
         let totalPages = 0;
         let currentPage = 1;
         let totalChapters = [];
-        let currentType = 'manga';      // 'manga' o 'spinoff'
-        let currentBaseUrl = 'caps';     // 'caps' o 'spinoffs/episode_nagi'
+        let currentType = 'manga';
+        let currentBaseUrl = 'caps';
 
-        // Mostrar notificación personalizada
+        let scrollTimeout;
+        let updateTimeout;
+
         function showNotification(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'custom-toast';
@@ -172,7 +206,6 @@
             setTimeout(() => toast.remove(), 2500);
         }
 
-        // Obtener parámetros de URL
         function getParamsFromURL() {
             const params = new URLSearchParams(window.location.search);
             const chapter = parseInt(params.get('chapter'));
@@ -185,7 +218,6 @@
             };
         }
 
-        // Enviar mensaje a Flutter cuando cambia de capítulo
         function notifyFlutter(chapterNumber, chapterTitle) {
             if (window.ChapterNotifier) {
                 window.ChapterNotifier.postMessage(JSON.stringify({
@@ -195,25 +227,15 @@
             }
         }
 
-        // Cargar lista de capítulos desde la API correspondiente
         async function loadChaptersList() {
             try {
-                let apiUrl = '';
-                if (currentType === 'spinoff') {
-                    apiUrl = `${BASE_URL}/api/episode_nagi.json`;
-                } else {
-                    apiUrl = `${BASE_URL}/api/chapters.json`;
-                }
+                let apiUrl = currentType === 'spinoff' 
+                    ? `${BASE_URL}/api/episode_nagi.json`
+                    : `${BASE_URL}/api/chapters.json`;
                 
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-                
-                if (currentType === 'spinoff') {
-                    totalChapters = data.chapters || [];
-                } else {
-                    totalChapters = data.chapters || [];
-                }
-                
+                totalChapters = data.chapters || [];
                 totalChapters.sort((a, b) => b.number - a.number);
                 return totalChapters;
             } catch (error) {
@@ -222,7 +244,6 @@
             }
         }
 
-        // Cargar las imágenes del capítulo actual
         async function loadChapter(chapterNumber, type, baseUrl) {
             const loadingDiv = document.getElementById('readerContent');
             loadingDiv.innerHTML = `
@@ -252,12 +273,9 @@
 
                 const imageUrls = [];
                 for (let i = 1; i <= totalPages; i++) {
-                    let url;
-                    if (type === 'spinoff') {
-                        url = `${BASE_URL}/${baseUrl}/${chapterNumber}/${i}.jpg`;
-                    } else {
-                        url = `${BASE_URL}/caps/${chapterNumber}/${i}.jpg`;
-                    }
+                    let url = type === 'spinoff'
+                        ? `${BASE_URL}/${baseUrl}/${chapterNumber}/${i}.jpg`
+                        : `${BASE_URL}/caps/${chapterNumber}/${i}.jpg`;
                     imageUrls.push(url);
                 }
 
@@ -275,7 +293,6 @@
             }
         }
 
-        // Renderizar el lector (modo cascada)
         function renderReader(imageUrls) {
             const container = document.getElementById('readerContent');
             
@@ -294,8 +311,11 @@
             const cascadaContainer = document.getElementById('cascadaContainer');
             if (cascadaContainer) {
                 cascadaContainer.addEventListener('scroll', () => {
-                    updateCurrentPageFromScroll();
-                    toggleUIOnScroll();
+                    // Usar requestAnimationFrame para mejor rendimiento
+                    requestAnimationFrame(() => {
+                        updateCurrentPageFromScroll();
+                        toggleUIOnScroll();
+                    });
                 });
             }
             
@@ -350,14 +370,13 @@
                 accumulatedHeight += imgHeight;
             }
             
-            if (visiblePage !== currentPage) {
+            if (visiblePage !== currentPage && visiblePage >= 1 && visiblePage <= totalPages) {
                 currentPage = visiblePage;
                 updatePageIndicator();
                 saveLastPage();
             }
         }
 
-        let scrollTimeout;
         function toggleUIOnScroll() {
             const footer = document.getElementById('readerFooter');
             footer.classList.add('hidden');
@@ -378,8 +397,8 @@
 
         function updatePageIndicator() {
             const indicator = document.getElementById('pageIndicator');
-            if (indicator) {
-                indicator.innerText = `📄 ${currentPage} / ${totalPages}`;
+            if (indicator && totalPages > 0) {
+                indicator.innerHTML = `📄 ${currentPage} / ${totalPages}`;
             }
         }
 
@@ -432,20 +451,19 @@
 
         function goToPage(page) {
             const container = document.getElementById('cascadaContainer');
-            if (container) {
+            if (container && page >= 1 && page <= totalPages) {
                 let accumulatedHeight = 0;
                 const images = container.querySelectorAll('img');
                 for (let i = 0; i < page - 1 && i < images.length; i++) {
                     accumulatedHeight += images[i].clientHeight;
                 }
                 container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
+                currentPage = page;
+                updatePageIndicator();
+                saveLastPage();
             }
-            currentPage = page;
-            updatePageIndicator();
-            saveLastPage();
         }
 
-        // Navegación de capítulos
         async function nextChapter() {
             const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
             if (currentIndex > 0) {
