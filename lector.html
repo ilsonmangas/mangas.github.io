@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Blue Lock - Lector de Manga</title>
+
     <style>
         * {
             margin: 0;
@@ -12,19 +13,26 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html,
         body {
+            width: 100%;
+            height: 100%;
             background: black;
             overflow-x: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: white;
         }
 
-        /* Notificación personalizada */
+        /* =========================
+           TOAST
+        ========================= */
+
         .custom-toast {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(10px);
             color: white;
             padding: 12px 24px;
@@ -33,33 +41,58 @@
             text-align: center;
             font-size: 14px;
             border: 1px solid #00d4ff;
-            box-shadow: 0 0 20px rgba(0,212,255,0.3);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
             animation: fadeInOut 2s ease-in-out forwards;
             pointer-events: none;
         }
 
         @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+
+            15% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            85% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
         }
 
-        /* Barra inferior */
+        /* =========================
+           FOOTER
+        ========================= */
+
         .reader-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.95);
+
+            background: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(12px);
+
+            border-top: 1px solid rgba(0, 212, 255, 0.3);
+
             padding: 12px 16px;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(0,212,255,0.3);
+            gap: 12px;
+
+            z-index: 9999;
+
+            transition: transform 0.3s ease;
         }
 
         .reader-footer.hidden {
@@ -67,11 +100,20 @@
         }
 
         .page-indicator {
-            background: rgba(0,212,255,0.15);
-            padding: 6px 12px;
+            background: rgba(0, 212, 255, 0.15);
+
+            border: 1px solid rgba(0, 212, 255, 0.35);
+
+            color: white !important;
+
+            padding: 8px 14px;
+
             border-radius: 20px;
-            font-size: 12px;
-            border: 1px solid rgba(0,212,255,0.3);
+
+            font-size: 13px;
+            font-weight: 600;
+
+            white-space: nowrap;
         }
 
         .chapter-nav-buttons {
@@ -80,14 +122,21 @@
         }
 
         .chapter-nav-buttons button {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.08);
+
             border: none;
+
             color: white;
-            padding: 8px 14px;
+
+            padding: 9px 14px;
+
             border-radius: 12px;
-            cursor: pointer;
+
             font-size: 12px;
             font-weight: 600;
+
+            cursor: pointer;
+
             transition: all 0.2s ease;
         }
 
@@ -97,134 +146,226 @@
             color: black;
         }
 
-        /* Contenedor de imágenes */
+        /* =========================
+           READER
+        ========================= */
+
+        #readerContent {
+            width: 100%;
+        }
+
         .cascada-container {
+            width: 100%;
             display: flex;
             flex-direction: column;
-            width: 100%;
-            padding: 0;
-            margin: 0;
         }
 
         .cascada-container img {
             width: 100%;
             height: auto;
             display: block;
-            margin: 0;
-            padding: 0;
             background: black;
         }
 
-        /* Loading */
+        /* =========================
+           LOADING
+        ========================= */
+
         .loading {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+
             color: #00d4ff;
+
             text-align: center;
+
             z-index: 2000;
         }
 
         .spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid rgba(0,212,255,0.1);
+
+            border: 4px solid rgba(0, 212, 255, 0.12);
             border-top-color: #00d4ff;
+
             border-radius: 50%;
-            animation: spin 1s infinite linear;
-            margin-bottom: 15px;
+
+            animation: spin 1s linear infinite;
+
+            margin: 0 auto 15px auto;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+            .reader-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .chapter-nav-buttons {
+                width: 100%;
+            }
+
+            .chapter-nav-buttons button {
+                flex: 1;
+            }
+
+            .page-indicator {
+                text-align: center;
+            }
         }
     </style>
 </head>
+
 <body>
 
+    <!-- FOOTER -->
     <div class="reader-footer" id="readerFooter">
-        <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
-        <div class="chapter-nav-buttons">
-            <button id="prevChapterBtn">⏮ Cap. anterior</button>
-            <button id="nextChapterBtn">Cap. siguiente ⏭</button>
+
+        <div class="page-indicator" id="pageIndicator">
+            📄 1 / 1
         </div>
+
+        <div class="chapter-nav-buttons">
+            <button id="prevChapterBtn">
+                ⏮ Cap. anterior
+            </button>
+
+            <button id="nextChapterBtn">
+                Cap. siguiente ⏭
+            </button>
+        </div>
+
     </div>
 
+    <!-- CONTENIDO -->
     <div id="readerContent"></div>
 
     <script>
+
         const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
+
         let currentChapter = null;
         let totalPages = 0;
         let currentPage = 1;
-        let totalChapters = [];
-        let currentType = 'manga';      // 'manga' o 'spinoff'
-        let currentBaseUrl = 'caps';     // 'caps' o 'spinoffs/episode_nagi'
 
-        // Mostrar notificación personalizada
+        let totalChapters = [];
+
+        let currentType = 'manga';
+        let currentBaseUrl = 'caps';
+
+        /* =========================
+           TOAST
+        ========================= */
+
         function showNotification(message, isError = false) {
+
             const toast = document.createElement('div');
+
             toast.className = 'custom-toast';
             toast.textContent = message;
-            if (isError) toast.style.borderColor = '#ff3366';
+
+            if (isError) {
+                toast.style.borderColor = '#ff3366';
+            }
+
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 2500);
         }
 
-        // Obtener parámetros de URL
+        /* =========================
+           URL PARAMS
+        ========================= */
+
         function getParamsFromURL() {
+
             const params = new URLSearchParams(window.location.search);
+
             const chapter = parseInt(params.get('chapter'));
             const type = params.get('type') || 'manga';
             const baseUrl = params.get('baseUrl') || 'caps';
+
             return {
-                chapter: !isNaN(chapter) ? chapter : 345,
+                chapter: !isNaN(chapter) ? chapter : 1,
                 type: type,
                 baseUrl: baseUrl
             };
         }
 
-        // Enviar mensaje a Flutter cuando cambia de capítulo
+        /* =========================
+           FLUTTER
+        ========================= */
+
         function notifyFlutter(chapterNumber, chapterTitle) {
+
             if (window.ChapterNotifier) {
-                window.ChapterNotifier.postMessage(JSON.stringify({
-                    chapter: chapterNumber,
-                    title: chapterTitle
-                }));
+
+                window.ChapterNotifier.postMessage(
+                    JSON.stringify({
+                        chapter: chapterNumber,
+                        title: chapterTitle
+                    })
+                );
             }
         }
 
-        // Cargar lista de capítulos desde la API correspondiente
+        /* =========================
+           CHAPTER LIST
+        ========================= */
+
         async function loadChaptersList() {
+
             try {
+
                 let apiUrl = '';
+
                 if (currentType === 'spinoff') {
                     apiUrl = `${BASE_URL}/api/episode_nagi.json`;
                 } else {
                     apiUrl = `${BASE_URL}/api/chapters.json`;
                 }
-                
+
                 const response = await fetch(apiUrl);
+
                 const data = await response.json();
-                
-                if (currentType === 'spinoff') {
-                    totalChapters = data.chapters || [];
-                } else {
-                    totalChapters = data.chapters || [];
-                }
-                
+
+                totalChapters = data.chapters || [];
+
                 totalChapters.sort((a, b) => b.number - a.number);
+
                 return totalChapters;
+
             } catch (error) {
+
                 console.error('Error cargando capítulos:', error);
+
                 return [];
             }
         }
 
-        // Cargar las imágenes del capítulo actual
+        /* =========================
+           LOAD CHAPTER
+        ========================= */
+
         async function loadChapter(chapterNumber, type, baseUrl) {
+
             const loadingDiv = document.getElementById('readerContent');
+
             loadingDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
@@ -233,254 +374,446 @@
             `;
 
             try {
+
                 const chapters = await loadChaptersList();
-                const chapterInfo = chapters.find(c => c.number === chapterNumber);
-                
+
+                const chapterInfo = chapters.find(
+                    c => c.number === chapterNumber
+                );
+
                 if (chapterInfo) {
+
                     currentChapter = chapterInfo;
                     totalPages = currentChapter.pages;
+
                 } else {
+
                     totalPages = 50;
-                    currentChapter = { 
-                        id: chapterNumber, 
-                        number: chapterNumber, 
-                        title: `Capítulo ${chapterNumber}`, 
-                        pages: 50,
-                        volume: 1
+
+                    currentChapter = {
+                        id: chapterNumber,
+                        number: chapterNumber,
+                        title: `Capítulo ${chapterNumber}`,
+                        pages: 50
                     };
                 }
 
+                currentPage = 1;
+
+                updatePageIndicator();
+
                 const imageUrls = [];
+
                 for (let i = 1; i <= totalPages; i++) {
-                    let url;
+
+                    let url = '';
+
                     if (type === 'spinoff') {
+
                         url = `${BASE_URL}/${baseUrl}/${chapterNumber}/${i}.jpg`;
+
                     } else {
+
                         url = `${BASE_URL}/caps/${chapterNumber}/${i}.jpg`;
                     }
+
                     imageUrls.push(url);
                 }
 
                 renderReader(imageUrls);
-                loadLastPageAndPosition();
-                
+
             } catch (error) {
+
                 console.error('Error:', error);
+
                 loadingDiv.innerHTML = `
                     <div class="loading">
                         <div>❌ Error al cargar el capítulo</div>
-                        <button onclick="location.reload()" style="margin-top:16px;padding:8px 16px;background:#00d4ff;border:none;border-radius:8px;color:black;">Reintentar</button>
+
+                        <button
+                            onclick="location.reload()"
+                            style="
+                                margin-top:16px;
+                                padding:8px 16px;
+                                background:#00d4ff;
+                                border:none;
+                                border-radius:8px;
+                                color:black;
+                            "
+                        >
+                            Reintentar
+                        </button>
                     </div>
                 `;
             }
         }
 
-        // Renderizar el lector (modo cascada)
+        /* =========================
+           RENDER
+        ========================= */
+
         function renderReader(imageUrls) {
+
             const container = document.getElementById('readerContent');
-            
+
             container.innerHTML = `
                 <div class="cascada-container" id="cascadaContainer">
+
                     ${imageUrls.map((url, idx) => `
-                        <img src="${url}" 
-                             loading="lazy"
-                             onerror="this.style.display='none'"
-                             alt="Página ${idx + 1}"
-                             data-page="${idx + 1}">
+                        <img
+                            src="${url}"
+                            alt="Página ${idx + 1}"
+                            data-page="${idx + 1}"
+                            loading="lazy"
+                            onerror="this.style.display='none'"
+                        >
                     `).join('')}
+
                 </div>
             `;
-            
-            const cascadaContainer = document.getElementById('cascadaContainer');
-            if (cascadaContainer) {
-                cascadaContainer.addEventListener('scroll', () => {
-                    updateCurrentPageFromScroll();
-                    toggleUIOnScroll();
-                });
-            }
-            
-            const loadingDiv = document.querySelector('.loading');
-            if (loadingDiv) loadingDiv.remove();
+
+            setupScrollListener();
+
+            setupImageLoadListeners();
+
+            setTimeout(() => {
+                loadLastPageAndPosition();
+            }, 300);
         }
+
+        /* =========================
+           IMAGE LOAD LISTENERS
+        ========================= */
+
+        function setupImageLoadListeners() {
+
+            const images = document.querySelectorAll('#cascadaContainer img');
+
+            images.forEach((img) => {
+
+                img.addEventListener('load', () => {
+
+                    updateCurrentPageFromScroll();
+                });
+            });
+        }
+
+        /* =========================
+           SCROLL LISTENER
+        ========================= */
+
+        function setupScrollListener() {
+
+            window.addEventListener('scroll', () => {
+
+                updateCurrentPageFromScroll();
+
+                toggleUIOnScroll();
+
+            }, {
+                passive: true
+            });
+        }
+
+        /* =========================
+           LAST POSITION
+        ========================= */
 
         function loadLastPageAndPosition() {
-            const savedPage = localStorage.getItem(`lastPage_${currentChapter.id}_${currentType}`);
+
+            const savedPage = localStorage.getItem(
+                `lastPage_${currentChapter.id}_${currentType}`
+            );
+
             if (savedPage) {
+
                 currentPage = parseInt(savedPage);
+
                 currentPage = Math.min(currentPage, totalPages);
-                updatePageIndicator();
-                
-                setTimeout(() => {
-                    const container = document.getElementById('cascadaContainer');
-                    if (container) {
-                        let accumulatedHeight = 0;
-                        const images = container.querySelectorAll('img');
-                        for (let i = 0; i < currentPage - 1 && i < images.length; i++) {
-                            accumulatedHeight += images[i].clientHeight;
-                        }
-                        container.scrollTop = accumulatedHeight;
-                    }
-                }, 300);
+
+                goToPage(currentPage, false);
+
             } else {
+
+                currentPage = 1;
+
                 updatePageIndicator();
             }
         }
 
+        /* =========================
+           PAGE DETECTION
+        ========================= */
+
         function updateCurrentPageFromScroll() {
-            const container = document.getElementById('cascadaContainer');
-            if (!container) return;
-            
-            const scrollTop = container.scrollTop;
-            const windowHeight = window.innerHeight;
-            let accumulatedHeight = 0;
-            let visiblePage = 1;
-            
-            const images = container.querySelectorAll('img');
-            for (let i = 0; i < images.length; i++) {
-                const imgHeight = images[i].clientHeight;
-                const imageTop = accumulatedHeight;
-                const imageBottom = imageTop + imgHeight;
-                
-                const viewportCenter = scrollTop + windowHeight / 2;
-                
-                if (viewportCenter >= imageTop && viewportCenter <= imageBottom) {
-                    visiblePage = i + 1;
-                    break;
+
+            const images = document.querySelectorAll('#cascadaContainer img');
+
+            if (!images.length) return;
+
+            const viewportMiddle = window.scrollY + (window.innerHeight / 2);
+
+            let detectedPage = 1;
+
+            images.forEach((img, index) => {
+
+                const rect = img.getBoundingClientRect();
+
+                const top = rect.top + window.scrollY;
+                const bottom = top + rect.height;
+
+                if (
+                    viewportMiddle >= top &&
+                    viewportMiddle <= bottom
+                ) {
+                    detectedPage = index + 1;
                 }
-                accumulatedHeight += imgHeight;
-            }
-            
-            if (visiblePage !== currentPage) {
-                currentPage = visiblePage;
+            });
+
+            if (detectedPage !== currentPage) {
+
+                currentPage = detectedPage;
+
                 updatePageIndicator();
+
                 saveLastPage();
             }
         }
 
+        /* =========================
+           PAGE INDICATOR
+        ========================= */
+
+        function updatePageIndicator() {
+
+            const indicator = document.getElementById('pageIndicator');
+
+            if (!indicator) return;
+
+            indicator.textContent =
+                `📄 ${currentPage} / ${totalPages}`;
+
+            indicator.style.color = '#ffffff';
+        }
+
+        /* =========================
+           SAVE PAGE
+        ========================= */
+
+        function saveLastPage() {
+
+            if (!currentChapter) return;
+
+            localStorage.setItem(
+                `lastPage_${currentChapter.id}_${currentType}`,
+                currentPage
+            );
+
+            localStorage.setItem(
+                'lastChapterId',
+                currentChapter.id
+            );
+
+            localStorage.setItem(
+                'lastType',
+                currentType
+            );
+        }
+
+        /* =========================
+           UI HIDE
+        ========================= */
+
         let scrollTimeout;
+
         function toggleUIOnScroll() {
+
             const footer = document.getElementById('readerFooter');
+
             footer.classList.add('hidden');
-            
-            if (scrollTimeout) clearTimeout(scrollTimeout);
+
+            clearTimeout(scrollTimeout);
+
             scrollTimeout = setTimeout(() => {
+
                 footer.classList.remove('hidden');
-            }, 2000);
+
+            }, 1500);
         }
 
         let uiManualHidden = false;
+
         document.body.addEventListener('click', (e) => {
+
             if (e.target.closest('button')) return;
+
             uiManualHidden = !uiManualHidden;
+
             const footer = document.getElementById('readerFooter');
+
             footer.classList.toggle('hidden', uiManualHidden);
         });
 
-        function updatePageIndicator() {
-            const indicator = document.getElementById('pageIndicator');
-            if (indicator) {
-                indicator.innerText = `📄 ${currentPage} / ${totalPages}`;
-            }
-        }
+        /* =========================
+           PAGE NAVIGATION
+        ========================= */
 
-        function saveLastPage() {
-            if (currentChapter) {
-                localStorage.setItem(`lastPage_${currentChapter.id}_${currentType}`, currentPage);
-                localStorage.setItem('lastChapterId', currentChapter.id);
-                localStorage.setItem('lastType', currentType);
-            }
-        }
-
-        // Navegación con gestos de swipe
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        });
-        
-        document.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-            
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-                if (deltaX > 0) {
-                    prevPage();
-                } else {
-                    nextPage();
-                }
-            }
-        });
-
-        // Navegación de páginas
         function nextPage() {
+
             if (currentPage < totalPages) {
+
                 currentPage++;
+
                 goToPage(currentPage);
             }
         }
 
         function prevPage() {
+
             if (currentPage > 1) {
+
                 currentPage--;
+
                 goToPage(currentPage);
             }
         }
 
-        function goToPage(page) {
-            const container = document.getElementById('cascadaContainer');
-            if (container) {
-                let accumulatedHeight = 0;
-                const images = container.querySelectorAll('img');
-                for (let i = 0; i < page - 1 && i < images.length; i++) {
-                    accumulatedHeight += images[i].clientHeight;
-                }
-                container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
-            }
+        function goToPage(page, smooth = true) {
+
+            const images = document.querySelectorAll('#cascadaContainer img');
+
+            if (!images[page - 1]) return;
+
+            images[page - 1].scrollIntoView({
+                behavior: smooth ? 'smooth' : 'auto',
+                block: 'start'
+            });
+
             currentPage = page;
+
             updatePageIndicator();
+
             saveLastPage();
         }
 
-        // Navegación de capítulos
+        /* =========================
+           TOUCH SWIPE
+        ========================= */
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (
+                Math.abs(deltaX) > Math.abs(deltaY) &&
+                Math.abs(deltaX) > 50
+            ) {
+
+                if (deltaX > 0) {
+
+                    prevPage();
+
+                } else {
+
+                    nextPage();
+                }
+            }
+        });
+
+        /* =========================
+           CHAPTER NAVIGATION
+        ========================= */
+
         async function nextChapter() {
-            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+
+            const currentIndex = totalChapters.findIndex(
+                c => c.id === currentChapter.id
+            );
+
             if (currentIndex > 0) {
+
                 const nextChap = totalChapters[currentIndex - 1];
-                notifyFlutter(nextChap.number, nextChap.title);
-                window.location.href = `lector.html?chapter=${nextChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
+                notifyFlutter(
+                    nextChap.number,
+                    nextChap.title
+                );
+
+                window.location.href =
+                    `lector.html?chapter=${nextChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
             } else {
+
                 showNotification('📖 ¡Es el último capítulo!');
             }
         }
 
         async function prevChapter() {
-            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+
+            const currentIndex = totalChapters.findIndex(
+                c => c.id === currentChapter.id
+            );
+
             if (currentIndex < totalChapters.length - 1) {
+
                 const prevChap = totalChapters[currentIndex + 1];
-                notifyFlutter(prevChap.number, prevChap.title);
-                window.location.href = `lector.html?chapter=${prevChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
+                notifyFlutter(
+                    prevChap.number,
+                    prevChap.title
+                );
+
+                window.location.href =
+                    `lector.html?chapter=${prevChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
             } else {
+
                 showNotification('📖 ¡Es el primer capítulo!');
             }
         }
 
+        /* =========================
+           INIT
+        ========================= */
+
         async function init() {
+
             const params = getParamsFromURL();
+
             currentType = params.type;
             currentBaseUrl = params.baseUrl;
-            
+
             await loadChaptersList();
-            await loadChapter(params.chapter, currentType, currentBaseUrl);
-            
-            document.getElementById('prevChapterBtn').onclick = prevChapter;
-            document.getElementById('nextChapterBtn').onclick = nextChapter;
+
+            await loadChapter(
+                params.chapter,
+                currentType,
+                currentBaseUrl
+            );
+
+            document.getElementById('prevChapterBtn')
+                .onclick = prevChapter;
+
+            document.getElementById('nextChapterBtn')
+                .onclick = nextChapter;
         }
 
         init();
+
     </script>
+
 </body>
 </html>
