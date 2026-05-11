@@ -58,6 +58,8 @@
             justify-content: space-between;
             align-items: center;
             border-top: 1px solid rgba(0,212,255,0.3);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .reader-footer.hidden {
@@ -97,6 +99,37 @@
             color: black;
         }
 
+        /* Selector de capítulos */
+        .chapter-selector {
+            background: rgba(0,0,0,0.8);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+
+        .chapter-selector select {
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .chapter-selector select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .chapter-selector label {
+            color: #00d4ff;
+            font-size: 12px;
+        }
+
         .cascada-container {
             display: flex;
             flex-direction: column;
@@ -112,6 +145,24 @@
             margin: 0;
             padding: 0;
             background: black;
+        }
+
+        /* Sección de comentarios Giscus */
+        .comments-section {
+            padding: 30px 20px 100px 20px;
+            background: #0a0a1a;
+            border-top: 2px solid #00d4ff;
+            margin-top: 20px;
+        }
+
+        .comments-title {
+            color: #00d4ff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .loading {
@@ -143,13 +194,25 @@
 
     <div class="reader-footer" id="readerFooter">
         <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
+        <div class="chapter-selector" id="chapterSelector">
+            <label>📚 Ir a capítulo:</label>
+            <select id="chapterSelect"></select>
+        </div>
         <div class="chapter-nav-buttons">
-            <button id="prevChapterBtn">⏮ Cap. anterior</button>
-            <button id="nextChapterBtn">Cap. siguiente ⏭</button>
+            <button id="prevChapterBtn">⏮ Ant.</button>
+            <button id="nextChapterBtn">Sig. ⏭</button>
         </div>
     </div>
 
     <div id="readerContent"></div>
+    
+    <div class="comments-section" id="commentsSection">
+        <div class="comments-title">
+            <span>💬</span>
+            <span>Comentarios</span>
+        </div>
+        <div id="giscus-container"></div>
+    </div>
 
     <script>
         const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
@@ -160,8 +223,6 @@
         let currentType = 'manga';
         let currentBaseUrl = 'caps';
         let scrollTimeout;
-        
-        // Array para almacenar alturas de las imágenes
         let imageHeights = [];
 
         function showNotification(message, isError = false) {
@@ -204,10 +265,42 @@
                 const data = await response.json();
                 totalChapters = data.chapters || [];
                 totalChapters.sort((a, b) => b.number - a.number);
+                populateChapterSelect();
                 return totalChapters;
             } catch (error) {
                 console.error('Error cargando capítulos:', error);
                 return [];
+            }
+        }
+
+        function populateChapterSelect() {
+            const select = document.getElementById('chapterSelect');
+            if (!select) return;
+            
+            select.innerHTML = '';
+            totalChapters.forEach(chap => {
+                const option = document.createElement('option');
+                option.value = chap.number;
+                option.textContent = `Capítulo ${chap.number}`;
+                if (currentChapter && chap.number === currentChapter.number) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            
+            select.onchange = () => {
+                const newChapter = parseInt(select.value);
+                if (newChapter !== currentChapter.number) {
+                    jumpToChapter(newChapter);
+                }
+            };
+        }
+
+        function jumpToChapter(chapterNumber) {
+            const newChapter = totalChapters.find(c => c.number === chapterNumber);
+            if (newChapter) {
+                notifyFlutter(newChapter.number, newChapter.title);
+                window.location.href = `lector.html?chapter=${newChapter.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
             }
         }
 
@@ -247,6 +340,7 @@
                 }
 
                 renderReader(imageUrls);
+                loadGiscus();
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -257,6 +351,31 @@
                     </div>
                 `;
             }
+        }
+
+        function loadGiscus() {
+            const giscusContainer = document.getElementById('giscus-container');
+            if (!giscusContainer) return;
+            
+            giscusContainer.innerHTML = '';
+            
+            const script = document.createElement('script');
+            script.src = 'https://giscus.app/client.js';
+            script.setAttribute('data-repo', 'ilsonmangas/mangas.github.io');
+            script.setAttribute('data-repo-id', 'R_kgDOMV-O0Q');
+            script.setAttribute('data-category', 'Announcements');
+            script.setAttribute('data-category-id', 'DIC_kwDOMV-O0M4Ci89M');
+            script.setAttribute('data-mapping', 'specific');
+            script.setAttribute('data-term', `Capítulo ${currentChapter.number}`);
+            script.setAttribute('data-reactions-enabled', '1');
+            script.setAttribute('data-emit-metadata', '0');
+            script.setAttribute('data-input-position', 'top');
+            script.setAttribute('data-theme', 'dark');
+            script.setAttribute('data-lang', 'es');
+            script.setAttribute('crossorigin', 'anonymous');
+            script.async = true;
+            
+            giscusContainer.appendChild(script);
         }
 
         function renderReader(imageUrls) {
@@ -275,17 +394,14 @@
                 </div>
             `;
             
-            // Esperar a que las imágenes se carguen para calcular alturas
             const images = document.querySelectorAll('.manga-page');
             let loadedCount = 0;
             
             function checkAllLoaded() {
                 loadedCount++;
                 if (loadedCount === images.length) {
-                    // Todas las imágenes están cargadas, calcular alturas
                     calculateImageHeights();
                     loadLastPageAndPosition();
-                    // Agregar evento de scroll después de que todo está cargado
                     const cascadaContainer = document.getElementById('cascadaContainer');
                     if (cascadaContainer) {
                         cascadaContainer.addEventListener('scroll', () => {
@@ -381,7 +497,7 @@
 
         let uiManualHidden = false;
         document.body.addEventListener('click', (e) => {
-            if (e.target.closest('button')) return;
+            if (e.target.closest('button') || e.target.closest('select')) return;
             uiManualHidden = !uiManualHidden;
             const footer = document.getElementById('readerFooter');
             footer.classList.toggle('hidden', uiManualHidden);
