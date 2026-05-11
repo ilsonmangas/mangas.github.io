@@ -37,8 +37,16 @@
       "number": 5,
       "title": "Vs. Equipo Y",
       "pages": 49,
-      "volume": 1,
+      "volume": 2,
       "coverUrl": "https://static.wikia.nocookie.net/bluelock/images/d/d3/Chapter_5_%28Episode_Nagi%29.png/revision/latest?cb=20221130054643"
+    },
+            {
+      "id": 6,
+      "number": 6,
+      "title": "El emperador, el idiota y el holgazán",
+      "pages": 37,
+      "volume": 2,
+      "coverUrl": "https://static.wikia.nocookie.net/bluelock/images/6/6b/Chapter_6_%28Episode_Nagi%29.png/revision/latest?cb=20221129160722"
     }
     
   ]
