@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Blue Lock - Lector de Manga</title>
+
     <style>
         * {
             margin: 0;
@@ -16,6 +17,7 @@
             background: black;
             overflow-x: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: white;
         }
 
         .custom-toast {
@@ -30,7 +32,7 @@
             border-radius: 30px;
             z-index: 3000;
             text-align: center;
-            font-size: 12px;
+            font-size: 14px;
             border: 1px solid #00d4ff;
             box-shadow: 0 0 20px rgba(0,212,255,0.3);
             animation: fadeInOut 2s ease-in-out forwards;
@@ -76,7 +78,7 @@
             padding: 10px 20px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
             transition: all 0.2s ease;
         }
@@ -104,6 +106,22 @@
             background: black;
         }
 
+        .comments-section {
+            padding: 40px 16px 120px;
+            background: #05050a;
+            border-top: 2px solid #00d4ff;
+        }
+
+        .comments-title {
+            color: #00d4ff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .loading {
             position: fixed;
             top: 50%;
@@ -129,6 +147,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="reader-footer" id="readerFooter">
@@ -140,30 +159,47 @@
 
     <div id="readerContent"></div>
 
+    <!-- GISCUS -->
+    <div class="comments-section">
+        <div class="comments-title">
+            💬 Comentarios
+        </div>
+
+        <div id="giscus-container"></div>
+    </div>
+
     <script>
         const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
+
         let currentChapter = null;
         let totalPages = 0;
         let totalChapters = [];
         let currentType = 'manga';
         let currentBaseUrl = 'caps';
         let scrollTimeout;
-        let imageHeights = [];
 
         function showNotification(message, isError = false) {
             const toast = document.createElement('div');
+
             toast.className = 'custom-toast';
             toast.textContent = message;
-            if (isError) toast.style.borderColor = '#ff3366';
+
+            if (isError) {
+                toast.style.borderColor = '#ff3366';
+            }
+
             document.body.appendChild(toast);
+
             setTimeout(() => toast.remove(), 2500);
         }
 
         function getParamsFromURL() {
             const params = new URLSearchParams(window.location.search);
+
             const chapter = parseInt(params.get('chapter'));
             const type = params.get('type') || 'manga';
             const baseUrl = params.get('baseUrl') || 'caps';
+
             return {
                 chapter: !isNaN(chapter) ? chapter : 345,
                 type: type,
@@ -182,23 +218,33 @@
 
         async function loadChaptersList() {
             try {
-                let apiUrl = currentType === 'spinoff' 
+
+                let apiUrl = currentType === 'spinoff'
                     ? `${BASE_URL}/api/episode_nagi.json`
                     : `${BASE_URL}/api/chapters.json`;
-                
+
                 const response = await fetch(apiUrl);
+
                 const data = await response.json();
+
                 totalChapters = data.chapters || [];
+
                 totalChapters.sort((a, b) => b.number - a.number);
+
                 return totalChapters;
+
             } catch (error) {
+
                 console.error('Error cargando capítulos:', error);
+
                 return [];
             }
         }
 
         async function loadChapter(chapterNumber, type, baseUrl) {
+
             const loadingDiv = document.getElementById('readerContent');
+
             loadingDiv.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
@@ -207,150 +253,260 @@
             `;
 
             try {
+
                 const chapters = await loadChaptersList();
-                const chapterInfo = chapters.find(c => c.number === chapterNumber);
-                
+
+                const chapterInfo = chapters.find(
+                    c => c.number === chapterNumber
+                );
+
                 if (chapterInfo) {
+
                     currentChapter = chapterInfo;
                     totalPages = currentChapter.pages;
+
                 } else {
+
                     totalPages = 50;
-                    currentChapter = { 
-                        id: chapterNumber, 
-                        number: chapterNumber, 
-                        title: `Capítulo ${chapterNumber}`, 
+
+                    currentChapter = {
+                        id: chapterNumber,
+                        number: chapterNumber,
+                        title: `Capítulo ${chapterNumber}`,
                         pages: 50,
                         volume: 1
                     };
                 }
 
                 const imageUrls = [];
+
                 for (let i = 1; i <= totalPages; i++) {
+
                     let url = type === 'spinoff'
                         ? `${BASE_URL}/${baseUrl}/${chapterNumber}/${i}.jpg`
                         : `${BASE_URL}/caps/${chapterNumber}/${i}.jpg`;
+
                     imageUrls.push(url);
                 }
 
                 renderReader(imageUrls);
-                
+
+                loadGiscus(currentChapter.number);
+
             } catch (error) {
+
                 console.error('Error:', error);
+
                 loadingDiv.innerHTML = `
                     <div class="loading">
                         <div>❌ Error al cargar el capítulo</div>
-                        <button onclick="location.reload()" style="margin-top:16px;padding:8px 16px;background:#00d4ff;border:none;border-radius:8px;color:black;">Reintentar</button>
+
+                        <button
+                            onclick="location.reload()"
+                            style="
+                                margin-top:16px;
+                                padding:8px 16px;
+                                background:#00d4ff;
+                                border:none;
+                                border-radius:8px;
+                                color:black;
+                            "
+                        >
+                            Reintentar
+                        </button>
                     </div>
                 `;
             }
         }
 
         function renderReader(imageUrls) {
+
             const container = document.getElementById('readerContent');
-            
+
             container.innerHTML = `
                 <div class="cascada-container" id="cascadaContainer">
+
                     ${imageUrls.map((url, idx) => `
-                        <img src="${url}" 
-                             loading="lazy"
-                             onerror="this.style.display='none'"
-                             alt="Página ${idx + 1}"
-                             data-page="${idx + 1}"
-                             class="manga-page">
+                        <img
+                            src="${url}"
+                            loading="lazy"
+                            onerror="this.style.display='none'"
+                            alt="Página ${idx + 1}"
+                            class="manga-page"
+                        >
                     `).join('')}
+
                 </div>
             `;
-            
-            const images = document.querySelectorAll('.manga-page');
-            let loadedCount = 0;
-            
-            function checkAllLoaded() {
-                loadedCount++;
-                if (loadedCount === images.length) {
-                    calculateImageHeights();
-                    const cascadaContainer = document.getElementById('cascadaContainer');
-                    if (cascadaContainer) {
-                        cascadaContainer.addEventListener('scroll', () => {
-                            toggleUIOnScroll();
-                        });
-                    }
-                }
-            }
-            
-            images.forEach(img => {
-                if (img.complete) {
-                    checkAllLoaded();
-                } else {
-                    img.addEventListener('load', checkAllLoaded);
-                    img.addEventListener('error', checkAllLoaded);
-                }
-            });
-            
+
             const loadingDiv = document.querySelector('.loading');
-            if (loadingDiv) loadingDiv.remove();
+
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+
+            window.addEventListener('scroll', toggleUIOnScroll);
         }
-        
-        function calculateImageHeights() {
-            const images = document.querySelectorAll('.manga-page');
-            imageHeights = [];
-            images.forEach(img => {
-                imageHeights.push(img.clientHeight);
-            });
+
+        // GISCUS
+        function loadGiscus(chapterNumber) {
+
+            const container = document.getElementById('giscus-container');
+
+            container.innerHTML = '';
+
+            const script = document.createElement('script');
+
+            script.src = 'https://giscus.app/client.js';
+
+            script.setAttribute(
+                'data-repo',
+                'ilsonmangas/mi-blog-comments'
+            );
+
+            script.setAttribute(
+                'data-repo-id',
+                'R_kgDOSS9Lwg'
+            );
+
+            script.setAttribute(
+                'data-category',
+                'General'
+            );
+
+            script.setAttribute(
+                'data-category-id',
+                'DIC_kwDOSS9Lws4C8PPK'
+            );
+
+            script.setAttribute(
+                'data-mapping',
+                'specific'
+            );
+
+            script.setAttribute(
+                'data-term',
+                `capitulo-${chapterNumber}`
+            );
+
+            script.setAttribute(
+                'data-theme',
+                'dark'
+            );
+
+            script.setAttribute(
+                'data-lang',
+                'es'
+            );
+
+            script.setAttribute(
+                'crossorigin',
+                'anonymous'
+            );
+
+            script.async = true;
+
+            container.appendChild(script);
         }
 
         function toggleUIOnScroll() {
+
             const footer = document.getElementById('readerFooter');
+
             footer.classList.add('hidden');
-            
-            if (scrollTimeout) clearTimeout(scrollTimeout);
+
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+
             scrollTimeout = setTimeout(() => {
                 footer.classList.remove('hidden');
             }, 2000);
         }
 
         let uiManualHidden = false;
+
         document.body.addEventListener('click', (e) => {
+
             if (e.target.closest('button')) return;
+
             uiManualHidden = !uiManualHidden;
+
             const footer = document.getElementById('readerFooter');
+
             footer.classList.toggle('hidden', uiManualHidden);
         });
 
         async function nextChapter() {
-            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+
+            const currentIndex = totalChapters.findIndex(
+                c => c.id === currentChapter.id
+            );
+
             if (currentIndex > 0) {
+
                 const nextChap = totalChapters[currentIndex - 1];
-                notifyFlutter(nextChap.number, nextChap.title);
-                window.location.href = `lector.html?chapter=${nextChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
+                notifyFlutter(
+                    nextChap.number,
+                    nextChap.title
+                );
+
+                window.location.href =
+                    `lector.html?chapter=${nextChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
             } else {
+
                 showNotification('📖 ¡Es el último capítulo!');
             }
         }
 
         async function prevChapter() {
-            const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
+
+            const currentIndex = totalChapters.findIndex(
+                c => c.id === currentChapter.id
+            );
+
             if (currentIndex < totalChapters.length - 1) {
+
                 const prevChap = totalChapters[currentIndex + 1];
-                notifyFlutter(prevChap.number, prevChap.title);
-                window.location.href = `lector.html?chapter=${prevChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
+                notifyFlutter(
+                    prevChap.number,
+                    prevChap.title
+                );
+
+                window.location.href =
+                    `lector.html?chapter=${prevChap.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
+
             } else {
+
                 showNotification('📖 ¡Es el primer capítulo!');
             }
         }
 
         async function init() {
+
             const params = getParamsFromURL();
+
             currentType = params.type;
             currentBaseUrl = params.baseUrl;
-            
+
             await loadChaptersList();
-            await loadChapter(params.chapter, currentType, currentBaseUrl);
-            
+
+            await loadChapter(
+                params.chapter,
+                currentType,
+                currentBaseUrl
+            );
+
             document.getElementById('prevChapterBtn').onclick = prevChapter;
+
             document.getElementById('nextChapterBtn').onclick = nextChapter;
         }
 
         init();
     </script>
+
 </body>
 </html>
