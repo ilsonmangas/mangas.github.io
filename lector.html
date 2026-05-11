@@ -55,40 +55,28 @@
             backdrop-filter: blur(10px);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             border-top: 1px solid rgba(0,212,255,0.3);
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
         .reader-footer.hidden {
             transform: translateY(100%);
         }
 
-        .page-indicator {
-            background: rgba(0,212,255,0.15);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            border: 1px solid rgba(0,212,255,0.3);
-            color: #00d4ff;
-            font-weight: bold;
-        }
-
         .chapter-nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 20px;
         }
 
         .chapter-nav-buttons button {
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
-            padding: 8px 14px;
-            border-radius: 12px;
+            padding: 10px 20px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
             transition: all 0.2s ease;
         }
@@ -97,37 +85,6 @@
             transform: scale(0.95);
             background: #00d4ff;
             color: black;
-        }
-
-        /* Selector de capítulos */
-        .chapter-selector {
-            background: rgba(0,0,0,0.8);
-            padding: 8px 16px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid rgba(0,212,255,0.3);
-        }
-
-        .chapter-selector select {
-            background: rgba(0,212,255,0.1);
-            border: 1px solid rgba(0,212,255,0.3);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .chapter-selector select option {
-            background: #1a1a2e;
-            color: white;
-        }
-
-        .chapter-selector label {
-            color: #00d4ff;
-            font-size: 12px;
         }
 
         .cascada-container {
@@ -145,24 +102,6 @@
             margin: 0;
             padding: 0;
             background: black;
-        }
-
-        /* Sección de comentarios Giscus */
-        .comments-section {
-            padding: 30px 20px 100px 20px;
-            background: #0a0a1a;
-            border-top: 2px solid #00d4ff;
-            margin-top: 20px;
-        }
-
-        .comments-title {
-            color: #00d4ff;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .loading {
@@ -193,32 +132,18 @@
 <body>
 
     <div class="reader-footer" id="readerFooter">
-        <div class="page-indicator" id="pageIndicator">📄 -- / --</div>
-        <div class="chapter-selector" id="chapterSelector">
-            <label>📚 Ir a capítulo:</label>
-            <select id="chapterSelect"></select>
-        </div>
         <div class="chapter-nav-buttons">
-            <button id="prevChapterBtn">⏮ Ant.</button>
-            <button id="nextChapterBtn">Sig. ⏭</button>
+            <button id="prevChapterBtn">⏮ Capítulo anterior</button>
+            <button id="nextChapterBtn">Capítulo siguiente ⏭</button>
         </div>
     </div>
 
     <div id="readerContent"></div>
-    
-    <div class="comments-section" id="commentsSection">
-        <div class="comments-title">
-            <span>💬</span>
-            <span>Comentarios</span>
-        </div>
-        <div id="giscus-container"></div>
-    </div>
 
     <script>
         const BASE_URL = 'https://ilsonmangas.github.io/mangas.github.io';
         let currentChapter = null;
         let totalPages = 0;
-        let currentPage = 1;
         let totalChapters = [];
         let currentType = 'manga';
         let currentBaseUrl = 'caps';
@@ -265,42 +190,10 @@
                 const data = await response.json();
                 totalChapters = data.chapters || [];
                 totalChapters.sort((a, b) => b.number - a.number);
-                populateChapterSelect();
                 return totalChapters;
             } catch (error) {
                 console.error('Error cargando capítulos:', error);
                 return [];
-            }
-        }
-
-        function populateChapterSelect() {
-            const select = document.getElementById('chapterSelect');
-            if (!select) return;
-            
-            select.innerHTML = '';
-            totalChapters.forEach(chap => {
-                const option = document.createElement('option');
-                option.value = chap.number;
-                option.textContent = `Capítulo ${chap.number}`;
-                if (currentChapter && chap.number === currentChapter.number) {
-                    option.selected = true;
-                }
-                select.appendChild(option);
-            });
-            
-            select.onchange = () => {
-                const newChapter = parseInt(select.value);
-                if (newChapter !== currentChapter.number) {
-                    jumpToChapter(newChapter);
-                }
-            };
-        }
-
-        function jumpToChapter(chapterNumber) {
-            const newChapter = totalChapters.find(c => c.number === chapterNumber);
-            if (newChapter) {
-                notifyFlutter(newChapter.number, newChapter.title);
-                window.location.href = `lector.html?chapter=${newChapter.number}&type=${currentType}&baseUrl=${currentBaseUrl}`;
             }
         }
 
@@ -340,7 +233,6 @@
                 }
 
                 renderReader(imageUrls);
-                loadGiscus();
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -351,31 +243,6 @@
                     </div>
                 `;
             }
-        }
-
-        function loadGiscus() {
-            const giscusContainer = document.getElementById('giscus-container');
-            if (!giscusContainer) return;
-            
-            giscusContainer.innerHTML = '';
-            
-            const script = document.createElement('script');
-            script.src = 'https://giscus.app/client.js';
-            script.setAttribute('data-repo', 'ilsonmangas/mangas.github.io');
-            script.setAttribute('data-repo-id', 'R_kgDOMV-O0Q');
-            script.setAttribute('data-category', 'Announcements');
-            script.setAttribute('data-category-id', 'DIC_kwDOMV-O0M4Ci89M');
-            script.setAttribute('data-mapping', 'specific');
-            script.setAttribute('data-term', `Capítulo ${currentChapter.number}`);
-            script.setAttribute('data-reactions-enabled', '1');
-            script.setAttribute('data-emit-metadata', '0');
-            script.setAttribute('data-input-position', 'top');
-            script.setAttribute('data-theme', 'dark');
-            script.setAttribute('data-lang', 'es');
-            script.setAttribute('crossorigin', 'anonymous');
-            script.async = true;
-            
-            giscusContainer.appendChild(script);
         }
 
         function renderReader(imageUrls) {
@@ -401,11 +268,9 @@
                 loadedCount++;
                 if (loadedCount === images.length) {
                     calculateImageHeights();
-                    loadLastPageAndPosition();
                     const cascadaContainer = document.getElementById('cascadaContainer');
                     if (cascadaContainer) {
                         cascadaContainer.addEventListener('scroll', () => {
-                            updateCurrentPageFromScroll();
                             toggleUIOnScroll();
                         });
                     }
@@ -433,58 +298,6 @@
             });
         }
 
-        function loadLastPageAndPosition() {
-            const savedPage = localStorage.getItem(`lastPage_${currentChapter.id}_${currentType}`);
-            if (savedPage) {
-                currentPage = parseInt(savedPage);
-                currentPage = Math.min(currentPage, totalPages);
-                updatePageIndicator();
-                
-                setTimeout(() => {
-                    const container = document.getElementById('cascadaContainer');
-                    if (container && imageHeights.length > 0) {
-                        let accumulatedHeight = 0;
-                        for (let i = 0; i < currentPage - 1 && i < imageHeights.length; i++) {
-                            accumulatedHeight += imageHeights[i];
-                        }
-                        container.scrollTop = accumulatedHeight;
-                    }
-                }, 100);
-            } else {
-                updatePageIndicator();
-            }
-        }
-
-        function updateCurrentPageFromScroll() {
-            const container = document.getElementById('cascadaContainer');
-            if (!container || imageHeights.length === 0) return;
-            
-            const scrollTop = container.scrollTop;
-            const windowHeight = window.innerHeight;
-            let accumulatedHeight = 0;
-            let newPage = 1;
-            
-            for (let i = 0; i < imageHeights.length; i++) {
-                const imgHeight = imageHeights[i];
-                const imageTop = accumulatedHeight;
-                const imageBottom = imageTop + imgHeight;
-                
-                const viewportCenter = scrollTop + (windowHeight / 2);
-                
-                if (viewportCenter >= imageTop && viewportCenter <= imageBottom) {
-                    newPage = i + 1;
-                    break;
-                }
-                accumulatedHeight += imgHeight;
-            }
-            
-            if (newPage !== currentPage && newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
-                updatePageIndicator();
-                saveLastPage();
-            }
-        }
-
         function toggleUIOnScroll() {
             const footer = document.getElementById('readerFooter');
             footer.classList.add('hidden');
@@ -497,77 +310,11 @@
 
         let uiManualHidden = false;
         document.body.addEventListener('click', (e) => {
-            if (e.target.closest('button') || e.target.closest('select')) return;
+            if (e.target.closest('button')) return;
             uiManualHidden = !uiManualHidden;
             const footer = document.getElementById('readerFooter');
             footer.classList.toggle('hidden', uiManualHidden);
         });
-
-        function updatePageIndicator() {
-            const indicator = document.getElementById('pageIndicator');
-            if (indicator && totalPages > 0) {
-                indicator.textContent = `📄 ${currentPage} / ${totalPages}`;
-            }
-        }
-
-        function saveLastPage() {
-            if (currentChapter) {
-                localStorage.setItem(`lastPage_${currentChapter.id}_${currentType}`, currentPage);
-                localStorage.setItem('lastChapterId', currentChapter.id);
-                localStorage.setItem('lastType', currentType);
-            }
-        }
-
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        });
-        
-        document.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaX = touchEndX - touchStartX;
-            const deltaY = touchEndY - touchStartY;
-            
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-                if (deltaX > 0) {
-                    prevPage();
-                } else {
-                    nextPage();
-                }
-            }
-        });
-
-        function nextPage() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                goToPage(currentPage);
-            }
-        }
-
-        function prevPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                goToPage(currentPage);
-            }
-        }
-
-        function goToPage(page) {
-            const container = document.getElementById('cascadaContainer');
-            if (container && imageHeights.length > 0 && page >= 1 && page <= totalPages) {
-                let accumulatedHeight = 0;
-                for (let i = 0; i < page - 1 && i < imageHeights.length; i++) {
-                    accumulatedHeight += imageHeights[i];
-                }
-                container.scrollTo({ top: accumulatedHeight, behavior: 'smooth' });
-                currentPage = page;
-                updatePageIndicator();
-                saveLastPage();
-            }
-        }
 
         async function nextChapter() {
             const currentIndex = totalChapters.findIndex(c => c.id === currentChapter.id);
