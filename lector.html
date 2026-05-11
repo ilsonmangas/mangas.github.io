@@ -24,7 +24,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
             color: white;
             padding: 12px 24px;
@@ -45,21 +45,21 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
         }
 
-        /* Barra inferior mejorada */
+        /* Barra inferior */
         .reader-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: rgba(0,0,0,0.95);
-            padding: 12px 20px;
+            padding: 12px 16px;
             z-index: 1000;
             backdrop-filter: blur(10px);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(0,212,255,0.4);
+            border-top: 1px solid rgba(0,212,255,0.3);
         }
 
         .reader-footer.hidden {
@@ -67,52 +67,36 @@
         }
 
         .page-indicator {
-            background: rgba(0,212,255,0.2);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: bold;
-            border: 1px solid rgba(0,212,255,0.5);
+            background: rgba(0,212,255,0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid rgba(0,212,255,0.3);
             color: #00d4ff;
+            font-weight: bold;
         }
 
         .chapter-nav-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .chapter-nav-buttons button {
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
-            padding: 10px 18px;
-            border-radius: 30px;
+            padding: 8px 14px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.2s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .chapter-nav-buttons button:hover {
-            background: rgba(255,255,255,0.2);
         }
 
         .chapter-nav-buttons button:active {
             transform: scale(0.95);
             background: #00d4ff;
             color: black;
-        }
-
-        /* Botón anterior */
-        #prevChapterBtn {
-            border: 1px solid rgba(0,212,255,0.3);
-        }
-
-        /* Botón siguiente */
-        #nextChapterBtn {
-            background: linear-gradient(135deg, #00d4ff, #090979);
-            border: none;
         }
 
         /* Contenedor de imágenes */
@@ -157,20 +141,6 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        /* Mejora del scroll */
-        .cascada-container::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .cascada-container::-webkit-scrollbar-track {
-            background: #1a1a2e;
-        }
-
-        .cascada-container::-webkit-scrollbar-thumb {
-            background: #00d4ff;
-            border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -195,7 +165,7 @@
         let currentBaseUrl = 'caps';
 
         let scrollTimeout;
-        let updateTimeout;
+        let isUpdating = false;
 
         function showNotification(message, isError = false) {
             const toast = document.createElement('div');
@@ -311,11 +281,12 @@
             const cascadaContainer = document.getElementById('cascadaContainer');
             if (cascadaContainer) {
                 cascadaContainer.addEventListener('scroll', () => {
-                    // Usar requestAnimationFrame para mejor rendimiento
-                    requestAnimationFrame(() => {
-                        updateCurrentPageFromScroll();
-                        toggleUIOnScroll();
-                    });
+                    if (!isUpdating) {
+                        requestAnimationFrame(() => {
+                            updateCurrentPageFromScroll();
+                        });
+                    }
+                    toggleUIOnScroll();
                 });
             }
             
@@ -350,14 +321,17 @@
             const container = document.getElementById('cascadaContainer');
             if (!container) return;
             
+            isUpdating = true;
+            
             const scrollTop = container.scrollTop;
             const windowHeight = window.innerHeight;
             let accumulatedHeight = 0;
-            let visiblePage = 1;
+            let visiblePage = currentPage;
             
             const images = container.querySelectorAll('img');
             for (let i = 0; i < images.length; i++) {
-                const imgHeight = images[i].clientHeight;
+                const img = images[i];
+                const imgHeight = img.clientHeight;
                 const imageTop = accumulatedHeight;
                 const imageBottom = imageTop + imgHeight;
                 
@@ -375,6 +349,10 @@
                 updatePageIndicator();
                 saveLastPage();
             }
+            
+            setTimeout(() => {
+                isUpdating = false;
+            }, 50);
         }
 
         function toggleUIOnScroll() {
@@ -398,7 +376,7 @@
         function updatePageIndicator() {
             const indicator = document.getElementById('pageIndicator');
             if (indicator && totalPages > 0) {
-                indicator.innerHTML = `📄 ${currentPage} / ${totalPages}`;
+                indicator.textContent = `📄 ${currentPage} / ${totalPages}`;
             }
         }
 
@@ -410,7 +388,6 @@
             }
         }
 
-        // Navegación con gestos de swipe
         let touchStartX = 0;
         let touchStartY = 0;
         
@@ -434,7 +411,6 @@
             }
         });
 
-        // Navegación de páginas
         function nextPage() {
             if (currentPage < totalPages) {
                 currentPage++;
